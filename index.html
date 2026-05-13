@@ -6,68 +6,132 @@
 <title>oti-fantasy ガチャシミュレーター</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #d4a843; --gold-light: #f0c96a; --gold-dark: #8a6a1a;
-    --bg: #0a0812; --bg2: #110e1e; --text: #e8dfc8; --text-dim: #8a7f6a;
-    --N: #9da8b0; --HN: #b8c4cc; --R: #4a9eff; --SR: #c060ff;
-    --UR: #ff8c00; --SC: #ff3060; --SP: #ff69b4;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'Noto Sans JP',sans-serif; min-height:100vh;
-    background-image: radial-gradient(ellipse at 20% 20%,rgba(100,60,180,.15) 0%,transparent 50%), radial-gradient(ellipse at 80% 80%,rgba(212,168,67,.08) 0%,transparent 50%); }
-  header { text-align:center; padding:40px 20px 20px; border-bottom:1px solid rgba(212,168,67,.2); }
-  header h1 { font-family:'Cinzel',serif; font-size:clamp(1.4rem,4vw,2.2rem); color:var(--gold); letter-spacing:.15em; text-shadow:0 0 30px rgba(212,168,67,.4); }
-  header p { color:var(--text-dim); font-size:.85rem; margin-top:6px; }
-  #rare-history-wrap { max-width:900px; margin:20px auto 0; padding:0 16px; }
-  #rare-history-label { font-size:.72rem; color:var(--gold-dark); letter-spacing:.1em; margin-bottom:6px; font-family:'Cinzel',serif; }
-  #rare-history { display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; min-height:36px; scrollbar-width:thin; scrollbar-color:var(--gold-dark) transparent; }
-  .hist-chip { flex-shrink:0; padding:3px 10px; border-radius:20px; font-size:.72rem; font-weight:700; border:1px solid currentColor; white-space:nowrap; }
-  main { max-width:900px; margin:0 auto; padding:24px 16px 60px; }
-  .gacha-buttons { display:flex; gap:16px; justify-content:center; margin-bottom:32px; flex-wrap:wrap; }
-  .btn-gacha { font-family:'Cinzel',serif; font-size:1rem; letter-spacing:.12em; padding:14px 36px; border:2px solid var(--gold); background:linear-gradient(135deg,rgba(212,168,67,.15),rgba(212,168,67,.05)); color:var(--gold-light); cursor:pointer; border-radius:4px; position:relative; overflow:hidden; transition:all .25s ease; }
-  .btn-gacha::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(212,168,67,.3),transparent); opacity:0; transition:opacity .25s; }
-  .btn-gacha:hover::before { opacity:1; }
-  .btn-gacha:hover { box-shadow:0 0 24px rgba(212,168,67,.35); transform:translateY(-1px); }
-  #result-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
-  .card { border-radius:8px; position:relative; background:var(--bg2); border:2px solid rgba(255,255,255,.08); animation:cardIn .4s ease backwards; overflow:hidden; }
-  .card img { width:100%; display:block; }
-  .card-no-image { width:100%; aspect-ratio:5/7; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 8px; text-align:center; }
-  @keyframes cardIn { from{opacity:0;transform:translateY(20px) scale(.92)} to{opacity:1;transform:none} }
-  .card.rarity-SR,.card.rarity-UR,.card.rarity-SC,.card.rarity-SP { animation:cardIn .4s ease backwards,glow 2s ease-in-out infinite alternate; }
-  @keyframes glow { from{box-shadow:0 0 8px var(--glow-color,#fff3)} to{box-shadow:0 0 20px var(--glow-color,#fff5),0 0 40px var(--glow-color,#fff2)} }
-  .card.rarity-N  { border-color:var(--N);  --glow-color:rgba(157,168,176,.3); }
-  .card.rarity-HN { border-color:var(--HN); --glow-color:rgba(184,196,204,.3); }
-  .card.rarity-R  { border-color:var(--R);  --glow-color:rgba(74,158,255,.4); }
-  .card.rarity-SR { border-color:var(--SR); --glow-color:rgba(192,96,255,.5); }
-  .card.rarity-UR { border-color:var(--UR); --glow-color:rgba(255,140,0,.5); }
-  .card.rarity-SC { border-color:var(--SC); --glow-color:rgba(255,48,96,.5); }
-  .card.rarity-SP { border-color:var(--SP); --glow-color:rgba(255,105,180,.5); }
-  .card-label { padding:6px 8px; font-size:.7rem; line-height:1.3; background:rgba(0,0,0,.65); }
-  .card-rarity-tag { font-family:'Cinzel',serif; font-size:.6rem; font-weight:700; }
-  .card-name-text { font-weight:700; margin-top:2px; }
-  .card-icon { font-size:2.2rem; margin-bottom:8px; }
-  #stats-wrap { margin-top:28px; padding:18px 20px; background:var(--bg2); border:1px solid rgba(212,168,67,.15); border-radius:8px; }
-  #stats-title { font-family:'Cinzel',serif; font-size:.78rem; color:var(--gold); letter-spacing:.1em; margin-bottom:12px; }
-  .stat-row { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
-  .stat-label { width:36px; text-align:right; font-family:'Cinzel',serif; font-size:.68rem; }
-  .stat-bar-wrap { flex:1; height:6px; background:rgba(255,255,255,.06); border-radius:3px; overflow:hidden; }
-  .stat-bar { height:100%; border-radius:3px; transition:width .5s ease; }
-  .stat-count { width:40px; text-align:right; color:var(--text-dim); font-size:.75rem; }
-  #rate-toggle { display:block; margin:20px auto 0; background:none; border:1px solid rgba(212,168,67,.25); color:var(--text-dim); font-size:.75rem; padding:7px 20px; border-radius:4px; cursor:pointer; font-family:'Noto Sans JP',sans-serif; transition:all .2s; }
-  #rate-toggle:hover { border-color:var(--gold); color:var(--gold); }
-  #rate-table { display:none; margin-top:16px; }
-  #rate-table.show { display:block; }
-  table { width:100%; border-collapse:collapse; font-size:.78rem; }
-  th,td { padding:7px 12px; text-align:left; border-bottom:1px solid rgba(255,255,255,.05); }
-  th { color:var(--text-dim); font-weight:400; font-size:.7rem; }
-  #btn-reset { display:block; margin:16px auto 0; background:none; border:1px solid rgba(255,255,255,.1); color:var(--text-dim); font-size:.72rem; padding:6px 18px; border-radius:4px; cursor:pointer; transition:all .2s; }
-  #btn-reset:hover { border-color:rgba(255,80,80,.4); color:#ff8080; }
-  .c-N{color:var(--N)} .c-HN{color:var(--HN)} .c-R{color:var(--R)} .c-SR{color:var(--SR)} .c-UR{color:var(--UR)} .c-SC{color:var(--SC)} .c-SP{color:var(--SP)}
-  .bar-N{background:var(--N)} .bar-HN{background:var(--HN)} .bar-R{background:var(--R)} .bar-SR{background:var(--SR)} .bar-UR{background:var(--UR)} .bar-SC{background:var(--SC)} .bar-SP{background:var(--SP)}
-  @media(max-width:500px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px}}
+:root {
+  --gold:#d4a843;--gold-light:#f0c96a;--gold-dark:#8a6a1a;
+  --bg:#0a0812;--bg2:#110e1e;--text:#e8dfc8;--text-dim:#8a7f6a;
+  --N:#9da8b0;--HN:#b8c4cc;--R:#4a9eff;--SR:#c060ff;--UR:#ff8c00;--SC:#ff3060;--SP:#ff69b4;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(100,60,180,.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(212,168,67,.08) 0%,transparent 50%);}
+
+/* ===== FLASH OVERLAY ===== */
+#flash-overlay{position:fixed;inset:0;pointer-events:none;z-index:100;opacity:0;}
+#flash-overlay.flash-R{animation:flashR .6s ease;}
+#flash-overlay.flash-SR{animation:flashSR .8s ease;}
+#flash-overlay.flash-UR{animation:flashUR 1s ease;}
+#flash-overlay.flash-SC{animation:flashSC 1s ease;}
+#flash-overlay.flash-SP{animation:flashSP .8s ease;}
+@keyframes flashR{0%{opacity:0;background:rgba(74,158,255,.4)}50%{opacity:1}100%{opacity:0}}
+@keyframes flashSR{0%{opacity:0;background:rgba(192,96,255,.5)}30%{opacity:1}100%{opacity:0}}
+@keyframes flashUR{0%{opacity:0;background:rgba(255,140,0,.6)}30%{opacity:1}100%{opacity:0}}
+@keyframes flashSC{0%{opacity:0;background:rgba(255,48,96,.6)}30%{opacity:1}100%{opacity:0}}
+@keyframes flashSP{0%{opacity:0;background:rgba(255,105,180,.5)}30%{opacity:1}100%{opacity:0}}
+
+/* ===== SPOTLIGHT MODAL ===== */
+#spotlight{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.85);align-items:center;justify-content:center;flex-direction:column;cursor:pointer;}
+#spotlight.show{display:flex;}
+#spotlight-card{position:relative;animation:spotlightIn .5s cubic-bezier(.17,.67,.35,1.3);}
+@keyframes spotlightIn{from{opacity:0;transform:scale(.4) rotateY(90deg)}to{opacity:1;transform:scale(1) rotateY(0deg)}}
+#spotlight-card img{width:260px;border-radius:10px;box-shadow:0 0 60px var(--spot-color,#fff);}
+#spotlight-rarity{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:900;margin-top:16px;letter-spacing:.2em;text-shadow:0 0 20px currentColor;}
+#spotlight-name{font-size:1rem;margin-top:8px;letter-spacing:.05em;}
+#spotlight-tap{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:24px;letter-spacing:.1em;}
+
+/* ===== PARTICLES ===== */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:150;overflow:hidden;}
+.particle{position:absolute;border-radius:50%;animation:particleFly var(--dur,1.5s) ease-out forwards;}
+@keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
+
+/* ===== HEADER ===== */
+header{text-align:center;padding:40px 20px 20px;border-bottom:1px solid rgba(212,168,67,.2);}
+header h1{font-family:'Cinzel',serif;font-size:clamp(1.4rem,4vw,2.2rem);color:var(--gold);letter-spacing:.15em;text-shadow:0 0 30px rgba(212,168,67,.4);}
+header p{color:var(--text-dim);font-size:.85rem;margin-top:6px;}
+
+/* ===== RARE HISTORY ===== */
+#rare-history-wrap{max-width:900px;margin:20px auto 0;padding:0 16px;}
+#rare-history-label{font-size:.72rem;color:var(--gold-dark);letter-spacing:.1em;margin-bottom:6px;font-family:'Cinzel',serif;}
+#rare-history{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;min-height:36px;scrollbar-width:thin;scrollbar-color:var(--gold-dark) transparent;}
+.hist-chip{flex-shrink:0;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;border:1px solid currentColor;white-space:nowrap;}
+
+/* ===== MAIN ===== */
+main{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
+.gacha-buttons{display:flex;gap:16px;justify-content:center;margin-bottom:32px;flex-wrap:wrap;}
+.btn-gacha{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.12em;padding:14px 36px;border:2px solid var(--gold);background:linear-gradient(135deg,rgba(212,168,67,.15),rgba(212,168,67,.05));color:var(--gold-light);cursor:pointer;border-radius:4px;position:relative;overflow:hidden;transition:all .25s ease;}
+.btn-gacha::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,67,.3),transparent);opacity:0;transition:opacity .25s;}
+.btn-gacha:hover::before{opacity:1;}
+.btn-gacha:hover{box-shadow:0 0 24px rgba(212,168,67,.35);transform:translateY(-1px);}
+.btn-gacha:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* ===== CARDS ===== */
+#result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+.card{border-radius:8px;position:relative;background:var(--bg2);border:2px solid rgba(255,255,255,.08);animation:cardIn .4s ease backwards;overflow:hidden;transition:transform .2s;}
+.card:hover{transform:translateY(-4px);}
+.card img{width:100%;display:block;}
+.card-no-image{width:100%;aspect-ratio:5/7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;text-align:center;}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.92)}to{opacity:1;transform:none}}
+
+/* レアリティ別ボーダー＆グロー */
+.card.rarity-SR,.card.rarity-UR,.card.rarity-SC,.card.rarity-SP{animation:cardIn .4s ease backwards,glow 2s ease-in-out infinite alternate;}
+.card.rarity-R{animation:cardIn .4s ease backwards,glowR 2s ease-in-out infinite alternate;}
+@keyframes glow{from{box-shadow:0 0 8px var(--glow-color,#fff3)}to{box-shadow:0 0 20px var(--glow-color,#fff5),0 0 40px var(--glow-color,#fff2)}}
+@keyframes glowR{from{box-shadow:0 0 6px rgba(74,158,255,.3)}to{box-shadow:0 0 14px rgba(74,158,255,.5)}}
+.card.rarity-N {border-color:var(--N); --glow-color:rgba(157,168,176,.3);}
+.card.rarity-HN{border-color:var(--HN);--glow-color:rgba(184,196,204,.3);}
+.card.rarity-R {border-color:var(--R); --glow-color:rgba(74,158,255,.4);}
+.card.rarity-SR{border-color:var(--SR);--glow-color:rgba(192,96,255,.5);}
+.card.rarity-UR{border-color:var(--UR);--glow-color:rgba(255,140,0,.5);}
+.card.rarity-SC{border-color:var(--SC);--glow-color:rgba(255,48,96,.5);}
+.card.rarity-SP{border-color:var(--SP);--glow-color:rgba(255,105,180,.5);}
+
+/* SR以上は枠を太く光らせる */
+.card.rarity-SR,.card.rarity-UR,.card.rarity-SC,.card.rarity-SP{border-width:3px;}
+
+.card-label{padding:6px 8px;font-size:.7rem;line-height:1.3;background:rgba(0,0,0,.65);}
+.card-rarity-tag{font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;}
+.card-name-text{font-weight:700;margin-top:2px;}
+.card-icon{font-size:2.2rem;margin-bottom:8px;}
+
+/* ===== STATS ===== */
+#stats-wrap{margin-top:28px;padding:18px 20px;background:var(--bg2);border:1px solid rgba(212,168,67,.15);border-radius:8px;}
+#stats-title{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold);letter-spacing:.1em;margin-bottom:12px;}
+.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.stat-label{width:36px;text-align:right;font-family:'Cinzel',serif;font-size:.68rem;}
+.stat-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.stat-bar{height:100%;border-radius:3px;transition:width .5s ease;}
+.stat-count{width:40px;text-align:right;color:var(--text-dim);font-size:.75rem;}
+
+#rate-toggle{display:block;margin:20px auto 0;background:none;border:1px solid rgba(212,168,67,.25);color:var(--text-dim);font-size:.75rem;padding:7px 20px;border-radius:4px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .2s;}
+#rate-toggle:hover{border-color:var(--gold);color:var(--gold);}
+#rate-table{display:none;margin-top:16px;}
+#rate-table.show{display:block;}
+table{width:100%;border-collapse:collapse;font-size:.78rem;}
+th,td{padding:7px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);}
+th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
+#btn-reset{display:block;margin:16px auto 0;background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-dim);font-size:.72rem;padding:6px 18px;border-radius:4px;cursor:pointer;transition:all .2s;}
+#btn-reset:hover{border-color:rgba(255,80,80,.4);color:#ff8080;}
+
+.c-N{color:var(--N)}.c-HN{color:var(--HN)}.c-R{color:var(--R)}.c-SR{color:var(--SR)}.c-UR{color:var(--UR)}.c-SC{color:var(--SC)}.c-SP{color:var(--SP)}
+.bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}.bar-UR{background:var(--UR)}.bar-SC{background:var(--SC)}.bar-SP{background:var(--SP)}
+@media(max-width:500px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px}}
 </style>
 </head>
 <body>
+
+<div id="flash-overlay"></div>
+<div id="particles"></div>
+
+<!-- スポットライトモーダル -->
+<div id="spotlight" onclick="closeSpotlight()">
+  <div id="spotlight-card">
+    <img id="spotlight-img" src="" alt="">
+    <div id="spotlight-icon" style="font-size:5rem;display:none;text-align:center;"></div>
+  </div>
+  <div id="spotlight-rarity"></div>
+  <div id="spotlight-name"></div>
+  <div id="spotlight-tap">— タップで閉じる —</div>
+</div>
+
 <header>
   <h1>✦ OTI-FANTASY GACHA ✦</h1>
   <p>シャル &amp; メルのカードを集めよう</p>
@@ -78,8 +142,8 @@
 </div>
 <main>
   <div class="gacha-buttons">
-    <button class="btn-gacha" onclick="doGacha(1)">✦ 単発ガチャ</button>
-    <button class="btn-gacha" onclick="doGacha(5)">✦✦ 5連ガチャ</button>
+    <button class="btn-gacha" id="btn1" onclick="doGacha(1)">✦ 単発ガチャ</button>
+    <button class="btn-gacha" id="btn5" onclick="doGacha(5)">✦✦ 5連ガチャ</button>
   </div>
   <div id="result-area"><div id="result-grid"></div></div>
   <div id="stats-wrap">
@@ -103,12 +167,18 @@
   </div>
   <button id="btn-reset" onclick="resetAll()">リセット</button>
 </main>
+
 <script>
 const IMG = 'shal-knight/';
 const ICONS = {N:'🌸',HN:'🌺',R:'💎',SR:'⭐',UR:'🌟',SC:'🔮',SP:'💖'};
+const SPOTLIGHT_RARITIES = new Set(['SR','UR','SC','SP']);
+const RARE_RARITIES = new Set(['R','SR','UR','SC','SP']);
+
+const RARITY_COLORS = {
+  R:'#4a9eff',SR:'#c060ff',UR:'#ff8c00',SC:'#ff3060',SP:'#ff69b4'
+};
 
 const CARDS = [
-  // N (30枚)
   {id:'N_001',name:'見張り番のひと休み',rarity:'N',file:'00001_N.png'},
   {id:'N_002',name:'朝のひととき',rarity:'N',file:'00002_N.png'},
   {id:'N_003',name:'麦畑の番人',rarity:'N',file:'00003_N.png'},
@@ -139,7 +209,6 @@ const CARDS = [
   {id:'N_028',name:'夕暮れの読書',rarity:'N',file:'00028_N.png'},
   {id:'N_029',name:'風の中で',rarity:'N',file:'00029_N.png'},
   {id:'N_030',name:'本と午後',rarity:'N',file:'00030_N.png'},
-  // HN (15枚)
   {id:'HN_031',name:'市場の観察者',rarity:'HN',file:'00031_N.png'},
   {id:'HN_032',name:'農地の守り手',rarity:'HN',file:'00032_N.png'},
   {id:'HN_033',name:'見張り台の剣士',rarity:'HN',file:'00033_N.png'},
@@ -155,7 +224,6 @@ const CARDS = [
   {id:'HN_043',name:'塔の監視者',rarity:'HN',file:'00043_N.png'},
   {id:'HN_044',name:'斧使いの衛兵',rarity:'HN',file:'00044_N.png'},
   {id:'HN_045',name:'光盾の守護騎士',rarity:'HN',file:'00045_N.png'},
-  // R (25枚)
   {id:'R_046',name:'潮風の誓剣士',rarity:'R',file:'00046_R.png'},
   {id:'R_047',name:'蒼岬の盾騎士',rarity:'R',file:'00047_R.png'},
   {id:'R_048',name:'紅雷の魔剣士',rarity:'R',file:'00048_R.png'},
@@ -181,7 +249,6 @@ const CARDS = [
   {id:'R_068',name:'黄昏の蒼鎧騎士',rarity:'R',file:'00068_R.png'},
   {id:'R_069',name:'赤盾の守護槍士',rarity:'R',file:'00069_R.png'},
   {id:'R_070',name:'蒼旋の斧騎士',rarity:'R',file:'00070_R.png'},
-  // SR (15枚)
   {id:'SR_071',name:'聖環の天誓騎士',rarity:'SR',file:'00071_SR.png'},
   {id:'SR_072',name:'黄金の祈剣姫',rarity:'SR',file:'00072_SR.png'},
   {id:'SR_073',name:'紅聖の断罪騎士',rarity:'SR',file:'00073_SR.png'},
@@ -197,7 +264,6 @@ const CARDS = [
   {id:'SR_083',name:'紅聖の断罪騎士Ⅱ',rarity:'SR',file:'00083_SR.png'},
   {id:'SR_084',name:'緋翼の機槍騎士',rarity:'SR',file:'00084_SR.png'},
   {id:'SR_085',name:'聖焔の白翼姫',rarity:'SR',file:'00085_SR.png'},
-  // UR (7枚) ※カード完成後に更新
   {id:'UR_086',name:'UR No.86',rarity:'UR',file:null},
   {id:'UR_087',name:'UR No.87',rarity:'UR',file:null},
   {id:'UR_088',name:'UR No.88',rarity:'UR',file:null},
@@ -205,11 +271,9 @@ const CARDS = [
   {id:'UR_090',name:'UR No.90',rarity:'UR',file:null},
   {id:'UR_091',name:'UR No.91',rarity:'UR',file:null},
   {id:'UR_092',name:'UR No.92',rarity:'UR',file:null},
-  // SC (3枚) ※カード完成後に更新
   {id:'SC_093',name:'SC No.93',rarity:'SC',file:null},
   {id:'SC_094',name:'SC No.94',rarity:'SC',file:null},
   {id:'SC_095',name:'SC No.95',rarity:'SC',file:null},
-  // SP (5枚) ※カード完成後に更新
   {id:'SP_096',name:'SP No.96',rarity:'SP',file:null},
   {id:'SP_097',name:'SP No.97',rarity:'SP',file:null},
   {id:'SP_098',name:'SP No.98',rarity:'SP',file:null},
@@ -217,32 +281,195 @@ const CARDS = [
   {id:'SP_100',name:'SP No.100',rarity:'SP',file:null},
 ];
 
-const RATES = [
+const RATES=[
   {rarity:'SP',rate:.002},{rarity:'SC',rate:.002},{rarity:'UR',rate:.008},
   {rarity:'SR',rate:.018},{rarity:'R',rate:.07},{rarity:'HN',rate:.32},{rarity:'N',rate:.58}
 ];
-const RARE_RARITIES = new Set(['R','SR','UR','SC','SP']);
-let stats = {N:0,HN:0,R:0,SR:0,UR:0,SC:0,SP:0,total:0};
-let history = [];
 
+let stats={N:0,HN:0,R:0,SR:0,UR:0,SC:0,SP:0,total:0};
+let history=[];
+let spotlightQueue=[];
+let audioCtx=null;
+
+// ===== AUDIO =====
+function getAudio(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playSound(rarity){
+  try{
+    const ctx=getAudio();
+    if(rarity==='N'||rarity==='HN'){
+      // 短いウィッシュ音
+      const o=ctx.createOscillator();const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.setValueAtTime(440,ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(880,ctx.currentTime+.1);
+      g.gain.setValueAtTime(.15,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.2);
+      o.start();o.stop(ctx.currentTime+.2);
+    } else if(rarity==='R'){
+      // チャイム
+      [523,659,784].forEach((freq,i)=>{
+        const o=ctx.createOscillator();const g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.type='sine';o.frequency.value=freq;
+        g.gain.setValueAtTime(0,ctx.currentTime+i*.08);
+        g.gain.linearRampToValueAtTime(.2,ctx.currentTime+i*.08+.05);
+        g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+i*.08+.4);
+        o.start(ctx.currentTime+i*.08);
+        o.stop(ctx.currentTime+i*.08+.4);
+      });
+    } else {
+      // ファンファーレ（SR以上）
+      const notes=rarity==='UR'?[392,523,659,784,1047]:
+                  rarity==='SC'?[349,440,523,698,880]:
+                  rarity==='SP'?[440,554,659,880,1109]:
+                  [349,440,523,659,784];
+      notes.forEach((freq,i)=>{
+        const o=ctx.createOscillator();const g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.type='triangle';o.frequency.value=freq;
+        g.gain.setValueAtTime(0,ctx.currentTime+i*.1);
+        g.gain.linearRampToValueAtTime(.25,ctx.currentTime+i*.1+.05);
+        g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+i*.1+.5);
+        o.start(ctx.currentTime+i*.1);
+        o.stop(ctx.currentTime+i*.1+.5);
+      });
+    }
+  } catch(e){}
+}
+
+// ===== FLASH =====
+function triggerFlash(rarity){
+  if(rarity==='N'||rarity==='HN') return;
+  const el=document.getElementById('flash-overlay');
+  el.className='';
+  void el.offsetWidth;
+  el.className=`flash-${rarity}`;
+}
+
+// ===== PARTICLES =====
+function spawnParticles(rarity, count=20){
+  if(rarity==='N'||rarity==='HN') return;
+  const container=document.getElementById('particles');
+  const color=RARITY_COLORS[rarity]||'#fff';
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const size=Math.random()*8+4;
+    const tx=(Math.random()-0.5)*window.innerWidth*.8;
+    const ty=-(Math.random()*window.innerHeight*.8+100);
+    const dur=Math.random()*.8+.8;
+    p.style.cssText=`
+      width:${size}px;height:${size}px;
+      background:${color};
+      left:${Math.random()*100}%;
+      top:${window.innerHeight*.6}px;
+      --tx:${tx}px;--ty:${ty}px;--dur:${dur}s;
+      opacity:1;
+    `;
+    container.appendChild(p);
+    setTimeout(()=>p.remove(),dur*1000+100);
+  }
+}
+
+// ===== SPOTLIGHT =====
+function showSpotlight(card){
+  return new Promise(resolve=>{
+    const modal=document.getElementById('spotlight');
+    const img=document.getElementById('spotlight-img');
+    const icon=document.getElementById('spotlight-icon');
+    const rar=document.getElementById('spotlight-rarity');
+    const nam=document.getElementById('spotlight-name');
+    const cardEl=document.getElementById('spotlight-card');
+
+    if(card.file){
+      img.src=IMG+card.file;img.style.display='block';
+      icon.style.display='none';
+    } else {
+      img.style.display='none';
+      icon.textContent=ICONS[card.rarity];icon.style.display='block';
+    }
+
+    const color=RARITY_COLORS[card.rarity]||'#fff';
+    img.style.boxShadow=`0 0 60px ${color}`;
+    rar.textContent=card.rarity;
+    rar.style.color=color;
+    nam.textContent=card.name;
+    cardEl.style.animation='none';
+    void cardEl.offsetWidth;
+    cardEl.style.animation='spotlightIn .5s cubic-bezier(.17,.67,.35,1.3)';
+
+    modal.classList.add('show');
+
+    const close=()=>{
+      modal.classList.remove('show');
+      modal.onclick=null;
+      resolve();
+    };
+    modal.onclick=close;
+  });
+}
+
+function closeSpotlight(){
+  document.getElementById('spotlight').classList.remove('show');
+}
+
+// ===== GACHA CORE =====
 function rollRarity(){const r=Math.random();let a=0;for(const{rarity,rate}of RATES){a+=rate;if(r<a)return rarity;}return 'N';}
 function pickCard(r){const p=CARDS.filter(c=>c.rarity===r);return p[Math.floor(Math.random()*p.length)];}
 
-function doGacha(n){
+async function doGacha(n){
+  // ボタン無効化
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('btn5').disabled=true;
+
   const results=[];
   for(let i=0;i<n;i++){
     const r=rollRarity();const c=pickCard(r);results.push(c);
     stats[r]++;stats.total++;
     if(RARE_RARITIES.has(r)){const e=history.find(h=>h.id===c.id);if(e)e.count++;else history.unshift({...c,count:1});}
   }
-  renderCards(results);renderStats();renderHistory();
+
+  // 最高レアリティを判定
+  const rarityOrder=['SC','UR','SR','SP','R','HN','N'];
+  const topRarity=rarityOrder.find(r=>results.some(c=>c.rarity===r));
+
+  // フラッシュ＆パーティクル
+  triggerFlash(topRarity);
+  playSound(topRarity);
+  if(SPOTLIGHT_RARITIES.has(topRarity)){
+    spawnParticles(topRarity,30);
+  } else if(topRarity==='R'){
+    spawnParticles('R',10);
+  }
+
+  // カード表示
+  renderCards(results);
+  renderStats();
+  renderHistory();
+
+  // SR以上のスポットライト表示（順番に）
+  const spotCards=results.filter(c=>SPOTLIGHT_RARITIES.has(c.rarity));
+  for(const card of spotCards){
+    await new Promise(r=>setTimeout(r,400));
+    playSound(card.rarity);
+    spawnParticles(card.rarity,20);
+    await showSpotlight(card);
+  }
+
+  // ボタン有効化
+  document.getElementById('btn1').disabled=false;
+  document.getElementById('btn5').disabled=false;
 }
 
 function renderCards(cards){
   const g=document.getElementById('result-grid');g.innerHTML='';
   cards.forEach((c,i)=>{
     const el=document.createElement('div');
-    el.className=`card rarity-${c.rarity}`;el.style.animationDelay=`${i*.07}s`;
+    el.className=`card rarity-${c.rarity}`;el.style.animationDelay=`${i*.08}s`;
     if(c.file){
       el.innerHTML=`<img src="${IMG}${c.file}" alt="${c.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <div class="card-no-image" style="display:none"><div class="card-rarity-tag c-${c.rarity}">${c.rarity}</div><div class="card-icon">${ICONS[c.rarity]}</div></div>
@@ -276,7 +503,9 @@ function toggleRate(){
 
 function resetAll(){
   stats={N:0,HN:0,R:0,SR:0,UR:0,SC:0,SP:0,total:0};history=[];
-  document.getElementById('result-grid').innerHTML='';document.getElementById('rare-history').innerHTML='';renderStats();
+  document.getElementById('result-grid').innerHTML='';
+  document.getElementById('rare-history').innerHTML='';
+  renderStats();
 }
 
 renderStats();
