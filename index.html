@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oti-fantasy ガチャシミュレーター</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #d4a843;
+    --gold-light: #f0c96a;
+    --gold-dark: #8a6a1a;
+    --bg: #0a0812;
+    --bg2: #110e1e;
+    --bg3: #1a1630;
+    --text: #e8dfc8;
+    --text-dim: #8a7f6a;
+    --N: #9da8b0;
+    --HN: #b8c4cc;
+    --R: #4a9eff;
+    --SR: #c060ff;
+    --UR: #ff8c00;
+    --SC: #ff3060;
+    --SP: #ff69b4;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(100,60,180,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(212,168,67,0.08) 0%, transparent 50%);
+  }
+
+  /* ヘッダー */
+  header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    border-bottom: 1px solid rgba(212,168,67,0.2);
+  }
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 30px rgba(212,168,67,0.4);
+  }
+  header p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  /* レア履歴 */
+  #rare-history-wrap {
+    max-width: 900px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  #rare-history-label {
+    font-size: 0.72rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    font-family: 'Cinzel', serif;
+  }
+  #rare-history {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    min-height: 36px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dark) transparent;
+  }
+  .hist-chip {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+  }
+
+  /* メイン */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* ガチャボタンエリア */
+  .gacha-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .btn-gacha {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    padding: 14px 36px;
+    border: 2px solid var(--gold);
+    background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
+    color: var(--gold-light);
+    cursor: pointer;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease;
+  }
+  .btn-gacha::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(212,168,67,0.3), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .btn-gacha:hover::before { opacity: 1; }
+  .btn-gacha:hover { box-shadow: 0 0 24px rgba(212,168,67,0.35); transform: translateY(-1px); }
+  .btn-gacha:active { transform: translateY(0); }
+
+  /* 結果グリッド */
+  #result-area {
+    min-height: 120px;
+  }
+  #result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    aspect-ratio: 2/3;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    text-align: center;
+    position: relative;
+    background: var(--bg2);
+    border: 2px solid rgba(255,255,255,0.08);
+    animation: cardIn 0.4s ease backwards;
+    overflow: hidden;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.92); }
+    to { opacity: 1; transform: none; }
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.07;
+    background: radial-gradient(ellipse at 50% 0%, white, transparent 70%);
+  }
+  .card.rarity-SR, .card.rarity-UR, .card.rarity-SC, .card.rarity-SP {
+    animation: cardIn 0.4s ease backwards, glow 2s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { box-shadow: 0 0 8px var(--glow-color, #fff3); }
+    to   { box-shadow: 0 0 20px var(--glow-color, #fff5), 0 0 40px var(--glow-color, #fff2); }
+  }
+  .card.rarity-N  { border-color: var(--N);  --glow-color: rgba(157,168,176,0.3); }
+  .card.rarity-HN { border-color: var(--HN); --glow-color: rgba(184,196,204,0.3); }
+  .card.rarity-R  { border-color: var(--R);  --glow-color: rgba(74,158,255,0.4); }
+  .card.rarity-SR { border-color: var(--SR); --glow-color: rgba(192,96,255,0.5); }
+  .card.rarity-UR { border-color: var(--UR); --glow-color: rgba(255,140,0,0.5); }
+  .card.rarity-SC { border-color: var(--SC); --glow-color: rgba(255,48,96,0.5); }
+  .card.rarity-SP { border-color: var(--SP); --glow-color: rgba(255,105,180,0.5); }
+
+  .card-rarity {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+  .card-icon { font-size: 2.2rem; margin-bottom: 8px; }
+  .card-name {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .card-rarity-badge {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 0.58rem;
+    font-family: 'Cinzel', serif;
+    opacity: 0.7;
+  }
+
+  /* 統計 */
+  #stats-wrap {
+    margin-top: 28px;
+    padding: 18px 20px;
+    background: var(--bg2);
+    border: 1px solid rgba(212,168,67,0.15);
+    border-radius: 8px;
+  }
+  #stats-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+    font-size: 0.8rem;
+  }
+  .stat-label { width: 36px; text-align: right; font-family: 'Cinzel', serif; font-size: 0.68rem; }
+  .stat-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+  .stat-bar { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .stat-count { width: 40px; text-align: right; color: var(--text-dim); font-size: 0.75rem; }
+
+  /* 排出率 */
+  #rate-toggle {
+    display: block;
+    margin: 20px auto 0;
+    background: none;
+    border: 1px solid rgba(212,168,67,0.25);
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    padding: 7px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.2s;
+  }
+  #rate-toggle:hover { border-color: var(--gold); color: var(--gold); }
+  #rate-table { display: none; margin-top: 16px; }
+  #rate-table.show { display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  th, td { padding: 7px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  th { color: var(--text-dim); font-weight: 400; font-size: 0.7rem; letter-spacing: 0.08em; }
+
+  /* リセット */
+  #btn-reset {
+    display: block;
+    margin: 16px auto 0;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    padding: 6px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #btn-reset:hover { border-color: rgba(255,80,80,0.4); color: #ff8080; }
+
+  /* カード色 */
+  .c-N  { color: var(--N); }
+  .c-HN { color: var(--HN); }
+  .c-R  { color: var(--R); }
+  .c-SR { color: var(--SR); }
+  .c-UR { color: var(--UR); }
+  .c-SC { color: var(--SC); }
+  .c-SP { color: var(--SP); }
+  .bar-N  { background: var(--N); }
+  .bar-HN { background: var(--HN); }
+  .bar-R  { background: var(--R); }
+  .bar-SR { background: var(--SR); }
+  .bar-UR { background: var(--UR); }
+  .bar-SC { background: var(--SC); }
+  .bar-SP { background: var(--SP); }
+
+  @media (max-width: 500px) {
+    #result-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .card-name { font-size: 0.68rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✦ OTI-FANTASY GACHA ✦</h1>
+  <p>シャル &amp; メルのカードを集めよう</p>
+</header>
+
+<div id="rare-history-wrap">
+  <div id="rare-history-label">RARE HISTORY — R以上の排出履歴</div>
+  <div id="rare-history"></div>
+</div>
+
+<main>
+  <div class="gacha-buttons">
+    <button class="btn-gacha" onclick="doGacha(1)">✦ 単発ガチャ</button>
+    <button class="btn-gacha" onclick="doGacha(5)">✦✦ 5連ガチャ</button>
+  </div>
+
+  <div id="result-area">
+    <div id="result-grid"></div>
+  </div>
+
+  <div id="stats-wrap">
+    <div id="stats-title">TOTAL STATS</div>
+    <div id="stats-rows"></div>
+    <div style="font-size:0.72rem; color:var(--text-dim); margin-top:8px;">合計: <span id="total-count">0</span> 回</div>
+  </div>
+
+  <button id="rate-toggle" onclick="toggleRate()">▾ 排出率を確認する</button>
+  <div id="rate-table">
+    <table>
+      <thead><tr><th>レアリティ</th><th>排出率</th></tr></thead>
+      <tbody>
+        <tr><td class="c-R">R (Rare)</td><td>7%</td></tr>
+        <tr><td class="c-SR">SR (Super Rare)</td><td>1.8%</td></tr>
+        <tr><td class="c-UR">UR (Ultra Rare)</td><td>0.8%</td></tr>
+        <tr><td class="c-SC">ScrtR (Secret Rare)</td><td>0.2%</td></tr>
+        <tr><td class="c-SP">SP (Special)</td><td>0.2%</td></tr>
+        <tr><td class="c-HN" style="opacity:0.5">HN / N</td><td style="opacity:0.5">残り</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button id="btn-reset" onclick="resetAll()">リセット</button>
+</main>
+
+<script>
+// カードデータ
+const CARDS = [
+  // N (30枚)
+  ...Array.from({length:30}, (_,i) => ({id:i+1, name:`シャル No.${i+1}`, rarity:'N', icon:'🌸'})),
+  // HN (15枚)
+  ...Array.from({length:15}, (_,i) => ({id:31+i, name:`シャル HN-${i+1}`, rarity:'HN', icon:'🌺'})),
+  // R (25枚)
+  ...Array.from({length:25}, (_,i) => ({id:46+i, name:`シャル R-${i+1}`, rarity:'R', icon:'💎'})),
+  // SR (15枚)
+  ...Array.from({length:15}, (_,i) => ({id:71+i, name:`シャル SR-${i+1}`, rarity:'SR', icon:'⭐'})),
+  // UR (7枚)
+  ...Array.from({length:7},  (_,i) => ({id:86+i, name:`シャル UR-${i+1}`, rarity:'UR', icon:'🌟'})),
+  // SC (3枚)
+  ...Array.from({length:3},  (_,i) => ({id:93+i, name:`ScrtR-${i+1}`,    rarity:'SC', icon:'🔮'})),
+  // SP (5枚)
+  ...Array.from({length:5},  (_,i) => ({id:96+i, name:`SP-${i+1}`,       rarity:'SP', icon:'💖'})),
+];
+
+const RATES = [
+  { rarity:'SP', rate:0.002 },
+  { rarity:'SC', rate:0.002 },
+  { rarity:'UR', rate:0.008 },
+  { rarity:'SR', rate:0.018 },
+  { rarity:'R',  rate:0.07  },
+  { rarity:'HN', rate:0.32  },
+  { rarity:'N',  rate:0.58  },
+];
+
+const RARE_RARITIES = new Set(['R','SR','UR','SC','SP']);
+
+let stats = {N:0, HN:0, R:0, SR:0, UR:0, SC:0, SP:0, total:0};
+let history = [];
+
+function rollRarity() {
+  const r = Math.random();
+  let acc = 0;
+  for (const {rarity, rate} of RATES) {
+    acc += rate;
+    if (r < acc) return rarity;
+  }
+  return 'N';
+}
+
+function pickCard(rarity) {
+  const pool = CARDS.filter(c => c.rarity === rarity);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function doGacha(n) {
+  const results = [];
+  for (let i = 0; i < n; i++) {
+    const rarity = rollRarity();
+    const card = pickCard(rarity);
+    results.push(card);
+    stats[rarity]++;
+    stats.total++;
+    if (RARE_RARITIES.has(rarity)) {
+      const existing = history.find(h => h.id === card.id);
+      if (existing) existing.count++;
+      else history.unshift({...card, count:1});
+    }
+  }
+  renderCards(results);
+  renderStats();
+  renderHistory();
+}
+
+function renderCards(cards) {
+  const grid = document.getElementById('result-grid');
+  grid.innerHTML = '';
+  cards.forEach((card, i) => {
+    const el = document.createElement('div');
+    el.className = `card rarity-${card.rarity}`;
+    el.style.animationDelay = `${i * 0.07}s`;
+    el.innerHTML = `
+      <div class="card-rarity c-${card.rarity}">${card.rarity}</div>
+      <div class="card-icon">${card.icon}</div>
+      <div class="card-name">${card.name}</div>
+      <div class="card-rarity-badge c-${card.rarity}">${card.rarity}</div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
+function renderStats() {
+  const wrap = document.getElementById('stats-rows');
+  const total = stats.total || 1;
+  const rarities = ['SC','UR','SR','R','HN','N','SP'];
+  wrap.innerHTML = rarities.map(r => {
+    const pct = Math.round(stats[r] / total * 100);
+    return `<div class="stat-row">
+      <div class="stat-label c-${r}">${r}</div>
+      <div class="stat-bar-wrap"><div class="stat-bar bar-${r}" style="width:${pct}%"></div></div>
+      <div class="stat-count">${stats[r]}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('total-count').textContent = stats.total;
+}
+
+function renderHistory() {
+  const wrap = document.getElementById('rare-history');
+  if (history.length === 0) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = history.map(h =>
+    `<span class="hist-chip c-${h.rarity}" style="border-color:var(--${h.rarity})">${h.name}${h.count > 1 ? ` ×${h.count}` : ''}</span>`
+  ).join('');
+}
+
+function toggleRate() {
+  const t = document.getElementById('rate-table');
+  t.classList.toggle('show');
+  document.getElementById('rate-toggle').textContent =
+    t.classList.contains('show') ? '▴ 排出率を閉じる' : '▾ 排出率を確認する';
+}
+
+function resetAll() {
+  stats = {N:0, HN:0, R:0, SR:0, UR:0, SC:0, SP:0, total:0};
+  history = [];
+  document.getElementById('result-grid').innerHTML = '';
+  document.getElementById('rare-history').innerHTML = '';
+  renderStats();
+}
+
+renderStats();
+</script>
+</body>
+</html>
