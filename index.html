@@ -9,13 +9,12 @@
 :root {
   --gold:#d4a843;--gold-light:#f0c96a;--gold-dark:#8a6a1a;
   --bg:#0a0812;--bg2:#110e1e;--text:#e8dfc8;--text-dim:#8a7f6a;
-  --N:#9da8b0;--HN:#b8c4cc;--R:#4a9eff;--SR:#c060ff;--UR:#ff8c00;--SC:#ff3060;--SP:#ff69b4;
+  --N:#9da8b0;--HN:#b8c4cc;--R:#4a9eff;--SR:#c060ff;--UR:#ff8c00;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;
   background-image:radial-gradient(ellipse at 20% 20%,rgba(100,60,180,.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(212,168,67,.08) 0%,transparent 50%);}
 
-/* ===== PARTICLES ===== */
 #particles{position:fixed;inset:0;pointer-events:none;z-index:150;overflow:hidden;}
 .particle{position:absolute;animation:particleFly var(--dur,1.5s) ease-out forwards;}
 @keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0) rotate(360deg)}}
@@ -23,44 +22,69 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 /* ===== REVEAL STAGE ===== */
 #reveal-stage{display:none;position:fixed;inset:0;z-index:200;cursor:pointer;overflow:hidden;}
 #reveal-stage.show{display:block;}
-
-/* 暗転背景 */
 #reveal-bg{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .4s;}
 #reveal-stage.show #reveal-bg{opacity:1;}
 
-/* R用: 青い光柱 */
-#light-beam-R{position:absolute;left:50%;top:0;width:3px;height:0;background:linear-gradient(to bottom,transparent,#4a9eff,#fff,#4a9eff,transparent);transform:translateX(-50%);opacity:0;filter:blur(2px);border-radius:4px;}
+/* R: 光柱 */
+#light-beam-R{position:absolute;left:50%;top:0;width:4px;height:0;background:linear-gradient(to bottom,transparent,#4a9eff,#fff,#4a9eff,transparent);transform:translateX(-50%);opacity:0;filter:blur(2px);border-radius:4px;}
 #light-beam-R.active{animation:beamDown .6s ease forwards;}
-@keyframes beamDown{0%{height:0;opacity:0;top:0}60%{height:100vh;opacity:1}100%{height:100vh;opacity:.4}}
-
-/* R用: 横の光線 */
+@keyframes beamDown{0%{height:0;opacity:0}60%{height:100vh;opacity:1}100%{height:100vh;opacity:.4}}
 #light-cross{position:absolute;top:50%;left:0;width:0;height:2px;background:linear-gradient(to right,transparent,#4a9eff,#fff,#4a9eff,transparent);transform:translateY(-50%);opacity:0;}
 #light-cross.active{animation:crossExpand .4s ease .5s forwards;}
 @keyframes crossExpand{0%{width:0;left:50%;opacity:0}100%{width:100%;left:0;opacity:.6}}
 
-/* SR用: 金色オーラ */
+/* SR: オーラ＋光柱 */
 #sr-aura{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at center,rgba(192,96,255,.6) 0%,rgba(212,168,67,.3) 40%,transparent 70%);}
 #sr-aura.active{animation:auraGlow 1.2s ease forwards;}
 @keyframes auraGlow{0%{opacity:0}40%{opacity:1}100%{opacity:.5}}
-
-/* SR用: 光の柱（複数） */
 .sr-beam{position:absolute;top:0;width:2px;height:0;opacity:0;filter:blur(1px);}
 .sr-beam.active{animation:srBeamDown 1s ease forwards;}
 @keyframes srBeamDown{0%{height:0;opacity:0}50%{opacity:1}100%{height:100vh;opacity:.5}}
 
-/* カード表示エリア */
-#reveal-card-area{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;}
+/* カード表示 */
+#reveal-card-area{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;padding:20px;}
 #reveal-card-area.show-card{animation:cardAppear .5s ease forwards;}
 @keyframes cardAppear{from{opacity:0;transform:scale(.5) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
-#reveal-img{width:min(260px,65vw);border-radius:10px;display:block;box-shadow:0 0 40px var(--card-glow,#fff);}
+#reveal-img{width:min(220px,55vw);border-radius:10px;display:block;}
 #reveal-icon-big{font-size:5rem;display:none;text-align:center;}
-#reveal-rarity-text{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;margin-top:18px;letter-spacing:.25em;text-shadow:0 0 30px currentColor;opacity:0;}
+#reveal-rarity-text{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;margin-top:14px;letter-spacing:.25em;text-shadow:0 0 30px currentColor;opacity:0;}
 #reveal-rarity-text.show-text{animation:textAppear .4s ease .3s forwards;}
-@keyframes textAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-#reveal-name-text{font-size:.95rem;margin-top:8px;color:var(--text);opacity:0;}
+#reveal-name-text{font-size:.95rem;margin-top:6px;color:var(--text);opacity:0;}
 #reveal-name-text.show-text{animation:textAppear .4s ease .5s forwards;}
-#reveal-tap-hint{font-size:.7rem;color:rgba(255,255,255,.3);margin-top:28px;letter-spacing:.12em;opacity:0;}
+
+/* フレーバーテキスト */
+#reveal-flavor{
+  max-width:min(320px,80vw);
+  margin-top:14px;
+  font-size:.82rem;
+  line-height:1.7;
+  color:rgba(232,223,200,.85);
+  text-align:center;
+  font-style:italic;
+  letter-spacing:.03em;
+  opacity:0;
+  border-top:1px solid rgba(255,255,255,.1);
+  padding-top:12px;
+}
+#reveal-flavor.show-flavor-N{animation:textAppear .5s ease .4s forwards;}
+#reveal-flavor.show-flavor-HN{animation:textAppear .5s ease .5s forwards;}
+#reveal-flavor.show-flavor-R{animation:textAppear .6s ease .9s forwards;}
+#reveal-flavor.show-flavor-SR{
+  animation:flavorFadeSR 1s ease 1.4s forwards;
+  font-size:.88rem;
+  color:rgba(240,201,106,.9);
+  text-shadow:0 0 20px rgba(192,96,255,.4);
+}
+@keyframes flavorFadeSR{
+  0%{opacity:0;transform:translateY(8px);letter-spacing:.08em}
+  100%{opacity:1;transform:none;letter-spacing:.05em}
+}
+
+#reveal-tap-hint{font-size:.68rem;color:rgba(255,255,255,.28);margin-top:20px;letter-spacing:.12em;opacity:0;}
 #reveal-tap-hint.show-text{animation:textAppear .4s ease .7s forwards;}
+#reveal-tap-hint.show-text-sr{animation:textAppear .4s ease 1.8s forwards;}
+
+@keyframes textAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
 /* ===== HEADER ===== */
 header{text-align:center;padding:40px 20px 20px;border-bottom:1px solid rgba(212,168,67,.2);}
@@ -84,15 +108,14 @@ main{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
 .card img{width:100%;display:block;}
 .card-no-image{width:100%;aspect-ratio:5/7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;text-align:center;}
 @keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:none}}
-.card.rarity-SR,.card.rarity-UR{animation:cardIn .35s ease forwards,glowSR 2s ease-in-out infinite alternate;}
+.card.rarity-SR{animation:cardIn .35s ease forwards,glowSR 2s ease-in-out infinite alternate;border-width:3px;}
 .card.rarity-R{animation:cardIn .35s ease forwards,glowR 2s ease-in-out infinite alternate;}
 @keyframes glowSR{from{box-shadow:0 0 10px var(--glow-color)}to{box-shadow:0 0 25px var(--glow-color),0 0 50px var(--glow-color)}}
 @keyframes glowR{from{box-shadow:0 0 6px rgba(74,158,255,.3)}to{box-shadow:0 0 18px rgba(74,158,255,.6)}}
-.card.rarity-N {border-color:var(--N);}
+.card.rarity-N{border-color:var(--N);}
 .card.rarity-HN{border-color:var(--HN);}
-.card.rarity-R {border-color:var(--R);  --glow-color:rgba(74,158,255,.5);}
-.card.rarity-SR{border-color:var(--SR);--glow-color:rgba(192,96,255,.6);border-width:3px;}
-.card.rarity-UR{border-color:var(--UR);--glow-color:rgba(255,140,0,.6);border-width:3px;}
+.card.rarity-R{border-color:var(--R);--glow-color:rgba(74,158,255,.5);}
+.card.rarity-SR{border-color:var(--SR);--glow-color:rgba(192,96,255,.6);}
 .card-label{padding:6px 8px;font-size:.7rem;line-height:1.3;background:rgba(0,0,0,.65);}
 .card-rarity-tag{font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;}
 .card-name-text{font-weight:700;margin-top:2px;}
@@ -113,30 +136,29 @@ th,td{padding:7px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,
 th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 #btn-reset{display:block;margin:16px auto 0;background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-dim);font-size:.72rem;padding:6px 18px;border-radius:4px;cursor:pointer;transition:all .2s;}
 #btn-reset:hover{border-color:rgba(255,80,80,.4);color:#ff8080;}
-.c-N{color:var(--N)}.c-HN{color:var(--HN)}.c-R{color:var(--R)}.c-SR{color:var(--SR)}.c-UR{color:var(--UR)}.c-SC{color:var(--SC)}.c-SP{color:var(--SP)}
-.bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}.bar-UR{background:var(--UR)}.bar-SC{background:var(--SC)}.bar-SP{background:var(--SP)}
+.c-N{color:var(--N)}.c-HN{color:var(--HN)}.c-R{color:var(--R)}.c-SR{color:var(--SR)}
+.bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}
 @media(max-width:500px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px}}
 </style>
 </head>
 <body>
 <div id="particles"></div>
 
-<!-- リビールステージ -->
 <div id="reveal-stage" onclick="resolveReveal()">
   <div id="reveal-bg"></div>
   <div id="light-beam-R"></div>
   <div id="light-cross"></div>
   <div id="sr-aura"></div>
-  <!-- SRビーム(複数) -->
-  <div class="sr-beam" id="srb1" style="left:20%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
-  <div class="sr-beam" id="srb2" style="left:40%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
-  <div class="sr-beam" id="srb3" style="left:60%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
-  <div class="sr-beam" id="srb4" style="left:80%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
+  <div class="sr-beam" id="srb1" style="left:15%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
+  <div class="sr-beam" id="srb2" style="left:35%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
+  <div class="sr-beam" id="srb3" style="left:65%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
+  <div class="sr-beam" id="srb4" style="left:85%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
   <div id="reveal-card-area">
     <img id="reveal-img" src="" alt="">
     <div id="reveal-icon-big"></div>
     <div id="reveal-rarity-text"></div>
     <div id="reveal-name-text"></div>
+    <div id="reveal-flavor"></div>
     <div id="reveal-tap-hint">— タップして次へ —</div>
   </div>
 </div>
@@ -176,7 +198,7 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 
 <script>
 const IMG='shal-knight/';
-const ICONS={N:'🌸',HN:'🌺',R:'💎',SR:'⭐',UR:'🌟'};
+const ICONS={N:'🌸',HN:'🌺',R:'💎',SR:'⭐'};
 const RARE_RARITIES=new Set(['R','SR']);
 let stats={N:0,HN:0,R:0,SR:0,total:0};
 let history=[];
@@ -184,146 +206,112 @@ let audioCtx=null;
 let revealResolve=null;
 
 const CARDS=[
-  {id:'N_001',name:'見張り番のひと休み',rarity:'N',file:'00001_N.png'},
-  {id:'N_002',name:'朝のひととき',rarity:'N',file:'00002_N.png'},
-  {id:'N_003',name:'麦畑の番人',rarity:'N',file:'00003_N.png'},
-  {id:'N_004',name:'月夜の見張り',rarity:'N',file:'00004_N.png'},
-  {id:'N_005',name:'廃墟の探索者',rarity:'N',file:'00005_N.png'},
-  {id:'N_006',name:'町の見張り',rarity:'N',file:'00006_N.png'},
-  {id:'N_007',name:'野営の夜',rarity:'N',file:'00007_N.png'},
-  {id:'N_008',name:'旅立ちの朝',rarity:'N',file:'00008_N.png'},
-  {id:'N_009',name:'月夜の川遊び',rarity:'N',file:'00009_N.png'},
-  {id:'N_010',name:'森の迷子番',rarity:'N',file:'00010_N.png'},
-  {id:'N_011',name:'城壁の小さな番人',rarity:'N',file:'00011_N.png'},
-  {id:'N_012',name:'宿屋の用心棒',rarity:'N',file:'00012_N.png'},
-  {id:'N_013',name:'野道の旅人',rarity:'N',file:'00013_N.png'},
-  {id:'N_014',name:'考え中',rarity:'N',file:'00014_N.png'},
-  {id:'N_015',name:'荷車の見張り',rarity:'N',file:'00015_N.png'},
-  {id:'N_016',name:'一人の昼休み',rarity:'N',file:'00016_N.png'},
-  {id:'N_017',name:'草原の歩哨',rarity:'N',file:'00017_N.png'},
-  {id:'N_018',name:'樽の上の見張り',rarity:'N',file:'00018_N.png'},
-  {id:'N_019',name:'お昼寝中',rarity:'N',file:'00019_N.png'},
-  {id:'N_020',name:'ひだまりの午後',rarity:'N',file:'00020_N.png'},
-  {id:'N_021',name:'収穫の休憩',rarity:'N',file:'00021_N.png'},
-  {id:'N_022',name:'野宿の朝',rarity:'N',file:'00022_N.png'},
-  {id:'N_023',name:'旅の途中で',rarity:'N',file:'00023_N.png'},
-  {id:'N_024',name:'夜の見回り',rarity:'N',file:'00024_N.png'},
-  {id:'N_025',name:'砂漠の旅人',rarity:'N',file:'00025_N.png'},
-  {id:'N_026',name:'食堂の一席',rarity:'N',file:'00026_N.png'},
-  {id:'N_027',name:'夕食の時間',rarity:'N',file:'00027_N.png'},
-  {id:'N_028',name:'夕暮れの読書',rarity:'N',file:'00028_N.png'},
-  {id:'N_029',name:'風の中で',rarity:'N',file:'00029_N.png'},
-  {id:'N_030',name:'本と午後',rarity:'N',file:'00030_N.png'},
-  {id:'HN_031',name:'市場の観察者',rarity:'HN',file:'00031_N.png'},
-  {id:'HN_032',name:'農地の守り手',rarity:'HN',file:'00032_N.png'},
-  {id:'HN_033',name:'見張り台の剣士',rarity:'HN',file:'00033_N.png'},
-  {id:'HN_034',name:'月光の騎士',rarity:'HN',file:'00034_N.png'},
-  {id:'HN_035',name:'神殿の見習い騎士',rarity:'HN',file:'00035_N.png'},
-  {id:'HN_036',name:'廃墟の番人',rarity:'HN',file:'00036_N.png'},
-  {id:'HN_037',name:'重装の突進兵',rarity:'HN',file:'00037_N.png'},
-  {id:'HN_038',name:'ミト隊長の背中',rarity:'HN',file:'00038_N.png'},
-  {id:'HN_039',name:'金貨の管理人',rarity:'HN',file:'00039_N.png'},
-  {id:'HN_040',name:'炎の見習い兵',rarity:'HN',file:'00040_N.png'},
-  {id:'HN_041',name:'夜の守護騎士',rarity:'HN',file:'00041_N.png'},
-  {id:'HN_042',name:'槍持ちの哨戒兵',rarity:'HN',file:'00042_N.png'},
-  {id:'HN_043',name:'塔の監視者',rarity:'HN',file:'00043_N.png'},
-  {id:'HN_044',name:'斧使いの衛兵',rarity:'HN',file:'00044_N.png'},
-  {id:'HN_045',name:'光盾の守護騎士',rarity:'HN',file:'00045_N.png'},
-  {id:'R_046',name:'潮風の誓剣士',rarity:'R',file:'00046_R.png'},
-  {id:'R_047',name:'蒼岬の盾騎士',rarity:'R',file:'00047_R.png'},
-  {id:'R_048',name:'紅雷の魔剣士',rarity:'R',file:'00048_R.png'},
-  {id:'R_049',name:'白陽の黄金盾',rarity:'R',file:'00049_R.png'},
-  {id:'R_050',name:'祈りの剣乙女',rarity:'R',file:'00050_R.png'},
-  {id:'R_051',name:'満月の聖剣士',rarity:'R',file:'00051_R.png'},
-  {id:'R_052',name:'薄暮の疾剣士',rarity:'R',file:'00052_R.png'},
-  {id:'R_053',name:'白金の盾聖騎士',rarity:'R',file:'00053_R.png'},
-  {id:'R_054',name:'月影の黒騎士',rarity:'R',file:'00054_R.png'},
-  {id:'R_055',name:'蒼刃の迎撃者',rarity:'R',file:'00055_R.png'},
-  {id:'R_056',name:'雷光の突撃騎士',rarity:'R',file:'00056_R.png'},
-  {id:'R_057',name:'陽門の翠騎士',rarity:'R',file:'00057_R.png'},
-  {id:'R_058',name:'蒼剣の王宮騎士',rarity:'R',file:'00058_R.png'},
-  {id:'R_059',name:'紅槍の円舞騎士',rarity:'R',file:'00059_R.png'},
-  {id:'R_060',name:'黎明の戦乙女',rarity:'R',file:'00060_R.png'},
-  {id:'R_061',name:'雷嵐の黒騎士',rarity:'R',file:'00061_R.png'},
-  {id:'R_062',name:'紫晶の聖騎士',rarity:'R',file:'00062_R.png'},
-  {id:'R_063',name:'月下の魔鎧騎士',rarity:'R',file:'00063_R.png'},
-  {id:'R_064',name:'蒼翼の剣騎士',rarity:'R',file:'00064_R.png'},
-  {id:'R_065',name:'白雲の空騎士',rarity:'R',file:'00065_R.png'},
-  {id:'R_066',name:'紅閃の剣闘士',rarity:'R',file:'00066_R.png'},
-  {id:'R_067',name:'白聖の黒騎士',rarity:'R',file:'00067_R.png'},
-  {id:'R_068',name:'黄昏の蒼鎧騎士',rarity:'R',file:'00068_R.png'},
-  {id:'R_069',name:'赤盾の守護槍士',rarity:'R',file:'00069_R.png'},
-  {id:'R_070',name:'蒼旋の斧騎士',rarity:'R',file:'00070_R.png'},
-  {id:'SR_071',name:'聖環の天誓騎士',rarity:'SR',file:'00071_SR.png'},
-  {id:'SR_072',name:'黄金の祈剣姫',rarity:'SR',file:'00072_SR.png'},
-  {id:'SR_073',name:'紅聖の断罪騎士',rarity:'SR',file:'00073_SR.png'},
-  {id:'SR_074',name:'蒼雷の聖盾騎士',rarity:'SR',file:'00074_SR.png'},
-  {id:'SR_075',name:'白羽の鎮魂姫',rarity:'SR',file:'00075_SR.png'},
-  {id:'SR_076',name:'紫月の死鎌姫',rarity:'SR',file:'00076_SR.png'},
-  {id:'SR_077',name:'蒼翼の天槍姫',rarity:'SR',file:'00077_SR.png'},
-  {id:'SR_078',name:'暁駆けの槍騎士',rarity:'SR',file:'00078_SR.png'},
-  {id:'SR_079',name:'光輪の聖裁姫',rarity:'SR',file:'00079_SR.png'},
-  {id:'SR_080',name:'蒼羽の終槍騎士',rarity:'SR',file:'00080_SR.png'},
-  {id:'SR_081',name:'聖盾の誓約騎士',rarity:'SR',file:'00081_SR.png'},
-  {id:'SR_082',name:'氷瀑の誓剣姫',rarity:'SR',file:'00082_SR.png'},
-  {id:'SR_083',name:'紅聖の断罪騎士Ⅱ',rarity:'SR',file:'00083_SR.png'},
-  {id:'SR_084',name:'緋翼の機槍騎士',rarity:'SR',file:'00084_SR.png'},
-  {id:'SR_085',name:'聖焔の白翼姫',rarity:'SR',file:'00085_SR.png'},
-];
+  {id:'N_001',name:'見張り番のひと休み',rarity:'N',file:'00001_N.png',flavor:'この槍、重いんだよね。…でも、これがあれば誰かを守れる気がするから。'},
+  {id:'N_002',name:'朝のひととき',rarity:'N',file:'00002_N.png',flavor:'村の朝は早いけど、温かいお茶があるなら…今日も、ちゃんとやれそう。'},
+  {id:'N_003',name:'麦畑の番人',rarity:'N',file:'00003_N.png',flavor:'荒らすなら、止めるだけ。…それだけだよ。'},
+  {id:'N_004',name:'月夜の見張り',rarity:'N',file:'00004_N.png',flavor:'夜が静かすぎると、少し落ち着かない。…来る前って、こんな感じだよね。'},
+  {id:'N_005',name:'廃墟の探索者',rarity:'N',file:'00005_N.png',flavor:'石の隙間に、まだ誰かの気配が残ってる。'},
+  {id:'N_006',name:'町角の見張り',rarity:'N',file:'00006_N.png',flavor:'広場で何かあったら、私が動く。…それが、今の役目だから。'},
+  {id:'N_007',name:'鍛冶場の休息',rarity:'N',file:'00007_N.png',flavor:'火を見ていると、少しだけ落ち着く。明日のことは、明日考えよう。'},
+  {id:'N_008',name:'旅支度の朝',rarity:'N',file:'00008_N.png',flavor:'行き先は決めてない。でも、足はもう前を向いてる。'},
+  {id:'N_009',name:'月夜の水辺',rarity:'N',file:'00009_N.png',flavor:'月が水面に映ってる。綺麗だけど…見張りも忘れないようにしないと。'},
+  {id:'N_010',name:'森の案内番',rarity:'N',file:'00010_N.png',flavor:'迷子じゃないよ。…たぶん。ランタンがあれば、なんとかなる。'},
+  {id:'N_011',name:'城壁の小さな番人',rarity:'N',file:'00011_N.png',flavor:'大人に任せるだけじゃなくて、私にもできることがある。'},
+  {id:'N_012',name:'山小屋の用心棒',rarity:'N',file:'00012_N.png',flavor:'用心棒を頼まれた。割のいい仕事かどうかは、まだわからない。'},
+  {id:'N_013',name:'野道の旅人',rarity:'N',file:'00013_N.png',flavor:'どこまで行けば、今より少し強くなれるんだろう。'},
+  {id:'N_014',name:'草原の考えごと',rarity:'N',file:'00014_N.png',flavor:'騎士って、どんな人がなれるんだろう。…私でも、なれるかな。'},
+  {id:'N_015',name:'荷車の見張り',rarity:'N',file:'00015_N.png',flavor:'荷物の番を頼まれた。簡単な仕事って聞いてたけど、全然暇じゃない。'},
+  {id:'N_016',name:'一人の昼休み',rarity:'N',file:'00016_N.png',flavor:'誰もいない昼間って、少し落ち着く。…たまには、いいよね。'},
+  {id:'N_017',name:'草原の歩哨',rarity:'N',file:'00017_N.png',flavor:'背後には気をつけろって言われてる。だから、ちゃんと見てる。'},
+  {id:'N_018',name:'樽の上の小休止',rarity:'N',file:'00018_N.png',flavor:'高いところから見ると、少しだけ遠くまで見える。'},
+  {id:'N_019',name:'お昼寝中',rarity:'N',file:'00019_N.png',flavor:'少しだけ休むつもりだった。…夢の中でも、ちゃんと見張ってたよ。'},
+  {id:'N_020',name:'ひだまりの午後',rarity:'N',file:'00020_N.png',flavor:'何もしない時間って、少し落ち着かないけど…たまにはいいと思う。'},
+  {id:'N_021',name:'収穫の休憩',rarity:'N',file:'00021_N.png',flavor:'実りがある季節は、少し安心する。…ちゃんと守れた気がするから。'},
+  {id:'N_022',name:'木陰の朝支度',rarity:'N',file:'00022_N.png',flavor:'朝の空気は好き。まだ静かで、ちゃんと動き出せる気がする。'},
+  {id:'N_023',name:'旅の途中で',rarity:'N',file:'00023_N.png',flavor:'行き先は決めてない。…でも、歩いていれば何か見えるよ。'},
+  {id:'N_024',name:'夜の見回り',rarity:'N',file:'00024_N.png',flavor:'月が明るい夜は、影が濃くなる。…気を抜かない方がいい。'},
+  {id:'N_025',name:'砂漠の旅人',rarity:'N',file:'00025_N.png',flavor:'暑さも寒さも、慣れるまでは大変。…でも、進めないほどじゃない。'},
+  {id:'N_026',name:'食堂の一席',rarity:'N',file:'00026_N.png',flavor:'美味しいご飯があると、少しだけ元気が戻る気がする。'},
+  {id:'N_027',name:'夕食の時間',rarity:'N',file:'00027_N.png',flavor:'今日も無事に夕飯が食べられた。それだけで、十分だと思う。'},
+  {id:'N_028',name:'夕暮れの読書',rarity:'N',file:'00028_N.png',flavor:'日が暮れるまで読んでいた。気づいたら、もう星が出てた。'},
+  {id:'N_029',name:'窓辺の手当て',rarity:'N',file:'00029_N.png',flavor:'少し痛むけど、大丈夫。…まだ動けるから。'},
+  {id:'N_030',name:'本と午後',rarity:'N',file:'00030_N.png',flavor:'本を読んでいると、知らない場所まで行ける気がする。だから、好き。'},
+  {id:'HN_031',name:'市場の観察者',rarity:'HN',file:'00031_N.png',flavor:'値段より、品物の様子を見る。それだけで、だいたいわかる。'},
+  {id:'HN_032',name:'農地の守り手',rarity:'HN',file:'00032_N.png',flavor:'この土地は渡さない。…立っている限りは。'},
+  {id:'HN_033',name:'見張り台の剣士',rarity:'HN',file:'00033_N.png',flavor:'高いところからなら、動きがよく見える。…見逃さないよ。'},
+  {id:'HN_034',name:'月光の騎士',rarity:'HN',file:'00034_N.png',flavor:'月が出ている夜は、少しだけ動きやすい。…理由は、よくわからないけど。'},
+  {id:'HN_035',name:'神殿の見習い騎士',rarity:'HN',file:'00035_N.png',flavor:'ここで誓ったことは、忘れない。…それだけで十分。'},
+  {id:'HN_036',name:'廃墟の番人',rarity:'HN',file:'00036_N.png',flavor:'誰も来なくても、見てる。それが、ここにいる理由だから。'},
+  {id:'HN_037',name:'重装の突進兵',rarity:'HN',file:'00037_N.png',flavor:'重くても、進める。…止まらなければいい。'},
+  {id:'HN_038',name:'ミト隊長の背中',rarity:'HN',file:'00038_N.png',flavor:'まだ届いてない。でも、並べる位置には立ちたい。'},
+  {id:'HN_039',name:'金貨の管理人',rarity:'HN',file:'00039_N.png',flavor:'流れを見ていれば、大体はわかる。…崩れる前も。'},
+  {id:'HN_040',name:'炎の見習い兵',rarity:'HN',file:'00040_N.png',flavor:'無理はしない。でも、やるならちゃんと当てる。'},
+  {id:'HN_041',name:'夜の守護騎士',rarity:'HN',file:'00041_N.png',flavor:'夜の方が静かでいい。…守る場所も、はっきりするから。'},
+  {id:'HN_042',name:'槍持ちの哨戒兵',rarity:'HN',file:'00042_N.png',flavor:'深く刺さなくていい。…残れば、それで十分。'},
+  {id:'HN_043',name:'塔の監視者',rarity:'HN',file:'00043_N.png',flavor:'見ていれば、少しずつわかる。…考えていることも。'},
+  {id:'HN_044',name:'斧使いの衛兵',rarity:'HN',file:'00044_N.png',flavor:'一撃で終わるなら、それが一番いい。'},
+  {id:'HN_045',name:'光盾の守護騎士',rarity:'HN',file:'00045_N.png',flavor:'守れるなら、それでいい。…最後に残れば。'},
+  {id:'R_046',name:'潮風の誓剣士',rarity:'R',file:'00046_R.png',flavor:'海の向こうまで、ちゃんと守るね。'},
+  {id:'R_047',name:'蒼岬の盾騎士',rarity:'R',file:'00047_R.png',flavor:'風が強いね。でも、進めるよ。'},
+  {id:'R_048',name:'紅雷の魔剣士',rarity:'R',file:'00048_R.png',flavor:'この刃だけは、迷わせない。'},
+  {id:'R_049',name:'白陽の黄金盾',rarity:'R',file:'00049_R.png',flavor:'ここから先は、私が受けるね。'},
+  {id:'R_050',name:'祈りの剣乙女',rarity:'R',file:'00050_R.png',flavor:'少しだけ、心を休めよう。'},
+  {id:'R_051',name:'満月の聖剣士',rarity:'R',file:'00051_R.png',flavor:'夜が深くても、私が照らすから。'},
+  {id:'R_052',name:'薄暮の疾剣士',rarity:'R',file:'00052_R.png',flavor:'届くよ。風が、背中を押してくれる。'},
+  {id:'R_053',name:'白金の盾聖騎士',rarity:'R',file:'00053_R.png',flavor:'大丈夫。全部、受け止める。'},
+  {id:'R_054',name:'月影の黒騎士',rarity:'R',file:'00054_R.png',flavor:'静かに終わらせるね。……怖くないように。'},
+  {id:'R_055',name:'蒼刃の迎撃者',rarity:'R',file:'00055_R.png',flavor:'近づきすぎだよ。下がって。'},
+  {id:'R_056',name:'雷光の突撃騎士',rarity:'R',file:'00056_R.png',flavor:'一瞬でいい。道を開くから。'},
+  {id:'R_057',name:'陽門の翠騎士',rarity:'R',file:'00057_R.png',flavor:'この門は、通さないよ。'},
+  {id:'R_058',name:'蒼剣の王宮騎士',rarity:'R',file:'00058_R.png',flavor:'見上げなくていいよ。私が前に立つから。'},
+  {id:'R_059',name:'紅槍の円舞騎士',rarity:'R',file:'00059_R.png',flavor:'この刃は、誓いの重さだから。'},
+  {id:'R_060',name:'黎明の戦乙女',rarity:'R',file:'00060_R.png',flavor:'朝が来るまで、ここを離れない。'},
+  {id:'R_061',name:'雷嵐の黒騎士',rarity:'R',file:'00061_R.png',flavor:'少し荒れるよ。離れていて。'},
+  {id:'R_062',name:'紫晶の聖騎士',rarity:'R',file:'00062_R.png',flavor:'前は任せて。みんなは、後ろに。'},
+  {id:'R_063',name:'月下の魔鎧騎士',rarity:'R',file:'00063_R.png',flavor:'眠ってて。痛みも、迷いも。'},
+  {id:'R_064',name:'蒼翼の剣騎士',rarity:'R',file:'00064_R.png',flavor:'……行くね。すぐに戻るから。'},
+  {id:'R_065',name:'白雲の空騎士',rarity:'R',file:'00065_R.png',flavor:'空は広いね。だから、迷わない。'},
+  {id:'R_066',name:'紅閃の剣闘士',rarity:'R',file:'00066_R.png',flavor:'まだ折れない。ここで踏み込むよ。'},
+  {id:'R_067',name:'白聖の黒騎士',rarity:'R',file:'00067_R.png',flavor:'焦らなくていい。光は、まだ残ってる。'},
+  {id:'R_068',name:'黄昏の蒼鎧騎士',rarity:'R',file:'00068_R.png',flavor:'振り返らないよ。守るって決めたから。'},
+  {id:'R_069',name:'赤盾の守護槍士',rarity:'R',file:'00069_R.png',flavor:'この盾がある限り、届かせない。'},
+  {id:'R_070',name:'蒼旋の斧騎士',rarity:'R',file:'00070_R.png',flavor:'ここで終わりにするね。全部、断ち切る。'},
+  {id:'SR_071',name:'聖環の天誓騎士',rarity:'SR',file:'00071_SR.png',flavor:'この祈りは、折れない。'},
+  {id:'SR_072',name:'黄金の祈剣姫',rarity:'SR',file:'00072_SR.png',flavor:'願いだけは、離さない。'},
+  {id:'SR_073',name:'紅聖の断罪騎士',rarity:'SR',file:'00073_SR.png',flavor:'逃がさない。この刃は届く。'},
+  {id:'SR_074',name:'蒼雷の聖盾騎士',rarity:'SR',file:'00074_SR.png',flavor:'雷鳴ごと、受け止める。'},
+  {id:'SR_075',name:'白羽の鎮魂姫',rarity:'SR',file:'00075_SR.png',flavor:'まだ、光は消えてない。'},
+  {id:'SR_076',name:'紫月の死鎌姫',rarity:'SR',file:'00076_SR.png',flavor:'静かに終わらせるね。'},
+  {id:'SR_077',name:'蒼翼の天槍姫',rarity:'SR',file:'00077_SR.png',flavor:'空から、貫いてみせる。'},
+  {id:'SR_078',name:'暁駆けの槍騎士',rarity:'SR',file:'00078_SR.png',flavor:'一気に、駆け抜けるよ。'},
+  {id:'SR_079',name:'光輪の聖裁姫',rarity:'SR',file:'00079_SR.png',flavor:'全部、浄めるね。'},
+  {id:'SR_080',name:'蒼羽の終槍騎士',rarity:'SR',file:'00080_SR.png',flavor:'もう、終わらせるね。'},
+  {id:'SR_081',name:'聖盾の誓約騎士',rarity:'SR',file:'00081_SR.png',flavor:'光は、ここに集まる。'},
+  {id:'SR_082',name:'氷瀑の誓剣姫',rarity:'SR',file:'00082_SR.png',flavor:'氷の誓いは、決して砕けない。'},
+  {id:'SR_083',name:'紅聖の断罪騎士',rarity:'SR',file:'00083_SR.png',flavor:'逃がさない。この刃は届く。'},
+  {id:'SR_084',name:'緋翼の機槍騎士',rarity:'SR',file:'00084_SR.png',flavor:'その願いごと、貫くよ。'},
+  {id:'SR_085',name:'聖焔の白翼姫',rarity:'SR',file:'00085_SR.png',flavor:'まだ、光は消えてない。'},];
 
 const RATES=[
-  {rarity:'SR',rate:.018},{rarity:'R',rate:.07},{rarity:'HN',rate:.32},{rarity:'N',rate:.59}
+  {rarity:'SR',rate:.018},{rarity:'R',rate:.07},{rarity:'HN',rate:.32},{rarity:'N',rate:.592}
 ];
 
-// ===== AUDIO =====
-function getAudio(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
 
-function playN(){
-  try{
-    const ctx=getAudio(),t=ctx.currentTime;
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.frequency.setValueAtTime(330,t);
-    o.frequency.exponentialRampToValueAtTime(495,t+.1);
-    g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
-    o.start(t);o.stop(t+.2);
-  }catch(e){}
-}
-
-function playHN(){
-  try{
-    const ctx=getAudio(),t=ctx.currentTime;
-    [330,440,550].forEach((f,i)=>{
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);
-      o.frequency.value=f;
-      g.gain.setValueAtTime(0,t+i*.04);
-      g.gain.linearRampToValueAtTime(.1,t+i*.04+.03);
-      g.gain.exponentialRampToValueAtTime(.001,t+i*.04+.25);
-      o.start(t+i*.04);o.stop(t+i*.04+.25);
-    });
-  }catch(e){}
-}
+function playN(){try{const ctx=getAudio(),t=ctx.currentTime;const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.setValueAtTime(330,t);o.frequency.exponentialRampToValueAtTime(495,t+.1);g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.2);}catch(e){}}
+function playHN(){try{const ctx=getAudio(),t=ctx.currentTime;[330,440,550].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(0,t+i*.04);g.gain.linearRampToValueAtTime(.1,t+i*.04+.03);g.gain.exponentialRampToValueAtTime(.001,t+i*.04+.25);o.start(t+i*.04);o.stop(t+i*.04+.25);});}catch(e){}}
 
 function playR(){
   try{
     const ctx=getAudio(),t=ctx.currentTime;
-    // 暗い低音→明るいチャイム
     const bass=ctx.createOscillator(),bg=ctx.createGain();
-    bass.connect(bg);bg.connect(ctx.destination);
-    bass.type='sine';bass.frequency.value=110;
+    bass.connect(bg);bg.connect(ctx.destination);bass.type='sine';bass.frequency.value=110;
     bg.gain.setValueAtTime(.3,t);bg.gain.exponentialRampToValueAtTime(.001,t+.8);
     bass.start(t);bass.stop(t+.8);
-
     [523,659,784,1047].forEach((f,i)=>{
       const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);
-      o.type='sine';o.frequency.value=f;
-      g.gain.setValueAtTime(0,t+.3+i*.1);
-      g.gain.linearRampToValueAtTime(.2,t+.3+i*.1+.05);
+      o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0,t+.3+i*.1);g.gain.linearRampToValueAtTime(.2,t+.3+i*.1+.05);
       g.gain.exponentialRampToValueAtTime(.001,t+.3+i*.1+.6);
       o.start(t+.3+i*.1);o.stop(t+.3+i*.1+.6);
     });
@@ -333,27 +321,21 @@ function playR(){
 function playSR(){
   try{
     const ctx=getAudio(),t=ctx.currentTime;
-    // 重厚な低音ドラム
     [1,2,3].forEach(i=>{
       const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);
-      o.type='sine';o.frequency.setValueAtTime(80,t+i*.15);
-      o.frequency.exponentialRampToValueAtTime(40,t+i*.15+.15);
-      g.gain.setValueAtTime(.4,t+i*.15);
-      g.gain.exponentialRampToValueAtTime(.001,t+i*.15+.2);
+      o.connect(g);g.connect(ctx.destination);o.type='sine';
+      o.frequency.setValueAtTime(80,t+i*.15);o.frequency.exponentialRampToValueAtTime(40,t+i*.15+.15);
+      g.gain.setValueAtTime(.4,t+i*.15);g.gain.exponentialRampToValueAtTime(.001,t+i*.15+.2);
       o.start(t+i*.15);o.stop(t+i*.15+.2);
     });
-    // 輝くファンファーレ
     const fanfare=[261,329,392,261,329,392,523,659,784,1047];
     const timing=[0,.05,.1,.3,.35,.4,.6,.7,.8,.9];
     fanfare.forEach((f,i)=>{
       ['triangle','sine'].forEach(type=>{
         const o=ctx.createOscillator(),g=ctx.createGain();
-        o.connect(g);g.connect(ctx.destination);
-        o.type=type;o.frequency.value=f;
+        o.connect(g);g.connect(ctx.destination);o.type=type;o.frequency.value=f;
         const vol=type==='triangle'?.22:.12;
-        g.gain.setValueAtTime(0,t+timing[i]);
-        g.gain.linearRampToValueAtTime(vol,t+timing[i]+.05);
+        g.gain.setValueAtTime(0,t+timing[i]);g.gain.linearRampToValueAtTime(vol,t+timing[i]+.05);
         g.gain.exponentialRampToValueAtTime(.001,t+timing[i]+.6);
         o.start(t+timing[i]);o.stop(t+timing[i]+.6);
       });
@@ -361,79 +343,89 @@ function playSR(){
   }catch(e){}
 }
 
-// ===== PARTICLES =====
-function spawnParticles(color,count,shapes){
+function spawnParticles(color,count){
   const container=document.getElementById('particles');
   for(let i=0;i<count;i++){
-    const p=document.createElement('div');
-    p.className='particle';
+    const p=document.createElement('div');p.className='particle';
     const size=Math.random()*12+4;
     const tx=(Math.random()-.5)*window.innerWidth*.9;
     const ty=-(Math.random()*window.innerHeight*.85+60);
     const dur=Math.random()*1+.8;
-    const isSquare=shapes&&Math.random()>.5;
-    p.style.cssText=`
-      width:${size}px;height:${size}px;
-      background:${color};
-      border-radius:${isSquare?'2px':'50%'};
-      left:${20+Math.random()*60}%;
-      top:55%;
-      --tx:${tx}px;--ty:${ty}px;--dur:${dur}s;
-    `;
+    const isSquare=Math.random()>.5;
+    p.style.cssText=`width:${size}px;height:${size}px;background:${color};border-radius:${isSquare?'2px':'50%'};left:${20+Math.random()*60}%;top:55%;--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;`;
     container.appendChild(p);
     setTimeout(()=>p.remove(),(dur+.2)*1000);
   }
 }
 
-// ===== REVEAL =====
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 
-function resetBeams(){
+function resetStage(){
   document.getElementById('light-beam-R').className='';
   document.getElementById('light-cross').className='';
   document.getElementById('sr-aura').className='';
-  ['srb1','srb2','srb3','srb4'].forEach(id=>{
-    document.getElementById(id).className='sr-beam';
-    document.getElementById(id).style.height='0';
-  });
+  ['srb1','srb2','srb3','srb4'].forEach(id=>{document.getElementById(id).className='sr-beam';});
   const area=document.getElementById('reveal-card-area');
   area.className='';area.style.opacity='0';
   document.getElementById('reveal-rarity-text').className='';
   document.getElementById('reveal-name-text').className='';
+  document.getElementById('reveal-flavor').className='';
+  document.getElementById('reveal-flavor').textContent='';
   document.getElementById('reveal-tap-hint').className='';
+}
+
+function setRevealCard(card){
+  const img=document.getElementById('reveal-img');
+  const icon=document.getElementById('reveal-icon-big');
+  if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}
+  else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}
+  document.getElementById('reveal-name-text').textContent=card.name;
+  document.getElementById('reveal-flavor').textContent=card.flavor||'';
+}
+
+async function showRevealNHN(card){
+  return new Promise(async resolve=>{
+    revealResolve=resolve;
+    resetStage();
+    document.getElementById('reveal-stage').classList.add('show');
+    setRevealCard(card);
+    img=document.getElementById('reveal-img');
+    img.style.boxShadow='none';
+    const rar=document.getElementById('reveal-rarity-text');
+    rar.textContent=card.rarity;
+    rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';
+    const fl=document.getElementById('reveal-flavor');
+    fl.style.color='rgba(232,223,200,.7)';
+    await wait(100);
+    document.getElementById('reveal-card-area').classList.add('show-card');
+    rar.classList.add('show-text');
+    document.getElementById('reveal-name-text').classList.add('show-text');
+    fl.classList.add(`show-flavor-${card.rarity}`);
+    document.getElementById('reveal-tap-hint').classList.add('show-text');
+  });
 }
 
 async function showRevealR(card){
   return new Promise(async resolve=>{
     revealResolve=resolve;
-    resetBeams();
-    const stage=document.getElementById('reveal-stage');
-    stage.classList.add('show');
-
-    // 画像セット
-    const img=document.getElementById('reveal-img');
-    const icon=document.getElementById('reveal-icon-big');
-    if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}
-    else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'💎';icon.style.display='block';}
-    img.style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';
-
+    resetStage();
+    document.getElementById('reveal-stage').classList.add('show');
+    setRevealCard(card);
+    document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';
     const rar=document.getElementById('reveal-rarity-text');
     rar.textContent='R A R E';rar.style.color='var(--R)';
-    document.getElementById('reveal-name-text').textContent=card.name;
-
-    // R演出：光柱が縦に走る
+    const fl=document.getElementById('reveal-flavor');
+    fl.style.color='rgba(180,210,255,.85)';
     await wait(300);
     document.getElementById('light-beam-R').classList.add('active');
     await wait(500);
     document.getElementById('light-cross').classList.add('active');
     await wait(300);
-
-    // カード登場
-    const area=document.getElementById('reveal-card-area');
-    area.classList.add('show-card');
+    document.getElementById('reveal-card-area').classList.add('show-card');
     await wait(100);
     rar.classList.add('show-text');
     document.getElementById('reveal-name-text').classList.add('show-text');
+    fl.classList.add('show-flavor-R');
     document.getElementById('reveal-tap-hint').classList.add('show-text');
   });
 }
@@ -441,70 +433,28 @@ async function showRevealR(card){
 async function showRevealSR(card){
   return new Promise(async resolve=>{
     revealResolve=resolve;
-    resetBeams();
-    const stage=document.getElementById('reveal-stage');
-    stage.classList.add('show');
-
-    const img=document.getElementById('reveal-img');
-    const icon=document.getElementById('reveal-icon-big');
-    if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}
-    else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'⭐';icon.style.display='block';}
-    img.style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';
-
+    resetStage();
+    document.getElementById('reveal-stage').classList.add('show');
+    setRevealCard(card);
+    document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';
     const rar=document.getElementById('reveal-rarity-text');
     rar.textContent='SUPER RARE';rar.style.color='var(--SR)';
-    document.getElementById('reveal-name-text').textContent=card.name;
-
-    // SR演出：オーラ→複数光柱→カード降臨
+    const fl=document.getElementById('reveal-flavor');
+    fl.style.color='rgba(240,201,106,.9)';
     await wait(200);
     document.getElementById('sr-aura').classList.add('active');
     await wait(300);
-
-    // 光柱を時差で
     ['srb1','srb2','srb3','srb4'].forEach((id,i)=>{
-      setTimeout(()=>{
-        const b=document.getElementById(id);
-        b.classList.add('active');
-      },i*120);
+      setTimeout(()=>document.getElementById(id).classList.add('active'),i*120);
     });
-
     await wait(800);
-    spawnParticles('#c060ff',15,true);
-    spawnParticles('#d4a843',15,true);
-
-    const area=document.getElementById('reveal-card-area');
-    area.classList.add('show-card');
+    spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);
+    document.getElementById('reveal-card-area').classList.add('show-card');
     await wait(100);
     rar.classList.add('show-text');
     document.getElementById('reveal-name-text').classList.add('show-text');
-    document.getElementById('reveal-tap-hint').classList.add('show-text');
-  });
-}
-
-async function showRevealNHN(card){
-  return new Promise(async resolve=>{
-    revealResolve=resolve;
-    resetBeams();
-    const stage=document.getElementById('reveal-stage');
-    stage.classList.add('show');
-
-    const img=document.getElementById('reveal-img');
-    const icon=document.getElementById('reveal-icon-big');
-    if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}
-    else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🌸';icon.style.display='block';}
-    img.style.boxShadow='none';
-
-    const rar=document.getElementById('reveal-rarity-text');
-    rar.textContent=card.rarity;
-    rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';
-    document.getElementById('reveal-name-text').textContent=card.name;
-
-    await wait(100);
-    const area=document.getElementById('reveal-card-area');
-    area.classList.add('show-card');
-    rar.classList.add('show-text');
-    document.getElementById('reveal-name-text').classList.add('show-text');
-    document.getElementById('reveal-tap-hint').classList.add('show-text');
+    fl.classList.add('show-flavor-SR');
+    document.getElementById('reveal-tap-hint').classList.add('show-text-sr');
   });
 }
 
@@ -513,7 +463,6 @@ function resolveReveal(){
   if(revealResolve){revealResolve();revealResolve=null;}
 }
 
-// ===== GACHA =====
 function rollRarity(){const r=Math.random();let a=0;for(const{rarity,rate}of RATES){a+=rate;if(r<a)return rarity;}return 'N';}
 function pickCard(r){const p=CARDS.filter(c=>c.rarity===r);return p[Math.floor(Math.random()*p.length)];}
 
@@ -536,34 +485,19 @@ async function doGacha(n){
   document.getElementById('btn1').disabled=true;
   document.getElementById('btn5').disabled=true;
   document.getElementById('result-grid').innerHTML='';
-
   const results=[];
   for(let i=0;i<n;i++){
     const r=rollRarity();const c=pickCard(r);results.push(c);
     stats[r]=(stats[r]||0)+1;stats.total++;
     if(RARE_RARITIES.has(r)){const e=history.find(h=>h.id===c.id);if(e)e.count++;else history.unshift({...c,count:1});}
   }
-
   for(const card of results){
-    if(card.rarity==='SR'){
-      playSR();
-      spawnParticles('#c060ff',20,true);
-      spawnParticles('#d4a843',10,true);
-      await showRevealSR(card);
-    } else if(card.rarity==='R'){
-      playR();
-      spawnParticles('#4a9eff',10,false);
-      await showRevealR(card);
-    } else if(card.rarity==='HN'){
-      playHN();
-      await showRevealNHN(card);
-    } else {
-      playN();
-      await showRevealNHN(card);
-    }
+    if(card.rarity==='SR'){playSR();spawnParticles('#c060ff',20);spawnParticles('#d4a843',10);await showRevealSR(card);}
+    else if(card.rarity==='R'){playR();spawnParticles('#4a9eff',10);await showRevealR(card);}
+    else if(card.rarity==='HN'){playHN();await showRevealNHN(card);}
+    else{playN();await showRevealNHN(card);}
     addCardToGrid(card);
   }
-
   renderStats();renderHistory();
   document.getElementById('btn1').disabled=false;
   document.getElementById('btn5').disabled=false;
