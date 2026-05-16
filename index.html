@@ -165,7 +165,7 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 
 <header>
   <h1>✦ OTI-FANTASY GACHA ✦</h1>
-  <p>シャル &amp; メルのカードを集めよう</p>
+  <p>シャル &amp; メルのカードを集めよう — Demo Ver.</p>
 </header>
 <div id="rare-history-wrap">
   <div id="rare-history-label">RARE HISTORY — R以上の排出履歴</div>
@@ -174,7 +174,7 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 <main>
   <div class="gacha-buttons">
     <button class="btn-gacha" id="btn1" onclick="doGacha(1)">✦ 単発ガチャ</button>
-    <button class="btn-gacha" id="btn5" onclick="doGacha(5)">✦✦ 5連ガチャ</button>
+    
   </div>
   <div id="result-area"><div id="result-grid"></div></div>
   <div id="stats-wrap">
@@ -483,7 +483,7 @@ function addCardToGrid(card){
 
 async function doGacha(n){
   document.getElementById('btn1').disabled=true;
-  document.getElementById('btn5').disabled=true;
+  
   document.getElementById('result-grid').innerHTML='';
   const results=[];
   for(let i=0;i<n;i++){
@@ -500,7 +500,7 @@ async function doGacha(n){
   }
   renderStats();renderHistory();
   document.getElementById('btn1').disabled=false;
-  document.getElementById('btn5').disabled=false;
+  
 }
 
 function renderStats(){
