@@ -453,16 +453,17 @@ function handleStageClick(){
   else if(dialogDone){resolveReveal();}
 }
 
-function flipCard(){document.getElementById('flip-inner').classList.add('flipped-bounce');}
-function showCardBack(){const w=document.getElementById('flip-wrapper');void w.offsetWidth;w.classList.add('intro-in');}
+function flipCard(){const el=document.getElementById('flip-inner');if(el)el.classList.add('flipped-bounce');}
+function showCardBack(){const w=document.getElementById('flip-wrapper');if(w){void w.offsetWidth;w.classList.add('intro-in');}}
 
 function resetStage(){
   twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});twTimers=[];twRunning=false;dialogDone=false;
   document.getElementById('light-beam-R').className='';document.getElementById('light-cross').className='';document.getElementById('sr-aura').className='';
   ['srb1','srb2','srb3','srb4'].forEach(id=>document.getElementById(id).className='sr-beam');
   const inner=document.getElementById('flip-inner');
-  inner.style.transition='none';inner.classList.remove('flipped-bounce');void inner.offsetWidth;inner.style.transition='';
-  const wrapper=document.getElementById('flip-wrapper');wrapper.classList.remove('intro-in');void wrapper.offsetWidth;
+  if(inner){inner.style.transition='none';inner.classList.remove('flipped-bounce');void inner.offsetWidth;inner.style.transition='';}
+  const wrapper=document.getElementById('flip-wrapper');
+  if(wrapper){wrapper.classList.remove('intro-in');void wrapper.offsetWidth;}
   document.getElementById('reveal-rarity-text').className='';document.getElementById('reveal-rarity-text').style.cssText='';
   document.getElementById('reveal-dialog').classList.remove('show-dialog');
   document.getElementById('r-dialog-text').textContent='';document.getElementById('r-dialog-cursor').style.display='none';
