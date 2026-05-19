@@ -20,7 +20,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 @keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0) rotate(360deg)}}
 
 /* ===== REVEAL STAGE ===== */
-#reveal-stage{display:none;position:fixed;inset:0;z-index:200;overflow:hidden;}
+#reveal-stage{display:none;position:fixed;inset:0;z-index:200;cursor:pointer;overflow:hidden;}
 #reveal-stage.show{display:block;}
 #reveal-bg{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .4s;}
 #reveal-stage.show #reveal-bg{opacity:1;}
@@ -41,146 +41,79 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 .sr-beam.active{animation:srBeamDown 1s ease forwards;}
 @keyframes srBeamDown{0%{height:0;opacity:0}50%{opacity:1}100%{height:100vh;opacity:.5}}
 
-/* ===== カードフリップ ===== */
+/* ── カード表示エリア（上部・ダイアログ分を除く） ── */
 #reveal-card-area{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:20px;
+  position:absolute;top:0;left:0;right:0;bottom:152px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px 20px 8px;pointer-events:none;
 }
 
-/* フリップ本体 */
-#flip-wrapper{
-  width:min(220px,55vw);
-  /* カード比率 5:7 */
-  aspect-ratio:5/7;
-  perspective:900px;
-  cursor:pointer;
-  flex-shrink:0;
-}
-#flip-inner{
-  width:100%;height:100%;
-  position:relative;
-  transform-style:preserve-3d;
-  transition:transform .65s cubic-bezier(.4,0,.2,1);
-}
-#flip-inner.flipped{
-  transform:rotateY(180deg);
-}
-/* フリップ完了後に若干弾む */
-#flip-inner.flipped-bounce{
-  animation:flipBounce .65s cubic-bezier(.4,0,.2,1) forwards;
-}
+/* カードフリップ */
+#flip-wrapper{width:min(200px,50vw);aspect-ratio:5/7;perspective:900px;flex-shrink:0;}
+#flip-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;}
+#flip-inner.flipped-bounce{animation:flipBounce .65s cubic-bezier(.4,0,.2,1) forwards;}
 @keyframes flipBounce{
-  0%{transform:rotateY(0deg) scale(1)}
-  40%{transform:rotateY(100deg) scale(.92)}
-  70%{transform:rotateY(175deg) scale(1.04)}
-  85%{transform:rotateY(178deg) scale(.98)}
+  0%  {transform:rotateY(0deg)   scale(1)}
+  40% {transform:rotateY(100deg) scale(.92)}
+  70% {transform:rotateY(175deg) scale(1.04)}
+  85% {transform:rotateY(178deg) scale(.98)}
   100%{transform:rotateY(180deg) scale(1)}
 }
+.flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;}
+#flip-back-face{box-shadow:0 4px 24px rgba(0,0,0,.7);}
+#flip-back-face img{width:100%;height:100%;object-fit:cover;display:block;}
+#flip-front-face{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;}
+#reveal-img{width:100%;height:100%;object-fit:cover;display:block;}
+#reveal-icon-big{font-size:4rem;display:none;text-align:center;}
+@keyframes backFaceIn{from{opacity:0;transform:scale(.82) translateY(22px)}to{opacity:1;transform:scale(1) translateY(0)}}
+#flip-wrapper.intro-in{animation:backFaceIn .42s cubic-bezier(.2,.8,.3,1) forwards;}
 
-.flip-face{
-  position:absolute;inset:0;
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-  border-radius:10px;
-  overflow:hidden;
-}
-#flip-back-face{
-  /* 表(初期状態): カード裏面 */
-  box-shadow:0 4px 24px rgba(0,0,0,.6);
-}
-#flip-back-face img{
-  width:100%;height:100%;object-fit:cover;display:block;
-}
-#flip-front-face{
-  /* 裏(フリップ後): カード表面 */
-  transform:rotateY(180deg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-}
-#reveal-img{
-  width:100%;height:100%;object-fit:cover;display:block;
-}
-#reveal-icon-big{
-  font-size:4rem;display:none;text-align:center;
-}
-
-/* カード裏面の初期スライドイン */
-@keyframes backFaceIn{
-  from{opacity:0;transform:scale(.85) translateY(20px)}
-  to{opacity:1;transform:scale(1) translateY(0)}
-}
-#flip-wrapper.intro-in{
-  animation:backFaceIn .45s cubic-bezier(.2,.8,.3,1) forwards;
-}
-
-/* ===== テキスト類 ===== */
-#reveal-rarity-text{
-  font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;
-  margin-top:14px;letter-spacing:.25em;
-  text-shadow:0 0 30px currentColor;
-  opacity:0;transition:opacity .4s, transform .4s;
-  transform:translateY(10px);
-}
+/* レアリティテキスト */
+#reveal-rarity-text{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;margin-top:10px;letter-spacing:.28em;text-shadow:0 0 30px currentColor;opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s;}
 #reveal-rarity-text.show-text{opacity:1;transform:translateY(0);}
 
-#reveal-name-text{
-  font-size:.95rem;margin-top:6px;color:var(--text);
-  opacity:0;transition:opacity .4s .15s, transform .4s .15s;
-  transform:translateY(8px);
+/* ── DQダイアログボックス（下部固定） ── */
+#reveal-dialog{
+  position:absolute;bottom:0;left:0;right:0;padding:0 12px 14px;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .32s ease,transform .32s ease;
+  pointer-events:auto;
 }
-#reveal-name-text.show-text{opacity:1;transform:translateY(0);}
-
-/* フレーバーテキスト（タイプライター用・CSS animation不使用） */
-#reveal-flavor{
-  max-width:min(320px,80vw);
-  margin-top:14px;
-  font-size:.82rem;
-  line-height:1.7;
-  color:rgba(232,223,200,.85);
-  text-align:center;
-  font-style:italic;
-  letter-spacing:.03em;
-  opacity:0;
-  border-top:1px solid rgba(255,255,255,.1);
-  padding-top:12px;
-  transition:opacity .3s;
-  min-height:1.4em; /* タイプ中に高さが跳ねないように */
+#reveal-dialog.show-dialog{opacity:1;transform:translateY(0);}
+#dialog-box{
+  position:relative;
+  background:rgba(5,4,16,.93);
+  border:2px solid rgba(80,110,190,.5);
+  border-radius:5px;
+  padding:14px 18px 13px;min-height:88px;
+  box-shadow:0 0 0 1px rgba(20,40,100,.5),inset 0 1px 0 rgba(100,140,255,.07),0 4px 24px rgba(0,0,0,.5);
 }
-
-/* タイプライターカーソル */
-.tw-cursor{
-  display:inline-block;
-  width:1px;height:.9em;
-  background:currentColor;
-  margin-left:1px;
-  vertical-align:text-bottom;
-  animation:cursorBlink .55s step-end infinite;
+#dialog-box::before,#dialog-box::after{content:'◆';position:absolute;font-size:.42rem;color:rgba(80,110,190,.55);line-height:1;}
+#dialog-box::before{top:5px;left:6px;}
+#dialog-box::after{bottom:5px;right:6px;}
+#dialog-name-tag{
+  position:absolute;top:-14px;left:10px;
+  background:rgba(5,4,16,.96);border:2px solid rgba(80,110,190,.5);border-radius:3px;
+  padding:1px 12px 2px;font-size:.74rem;font-weight:700;
+  color:rgba(195,215,255,.95);letter-spacing:.06em;white-space:nowrap;
 }
-@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
-
-#reveal-tap-hint{
-  font-size:.68rem;color:rgba(255,255,255,.28);
-  margin-top:20px;letter-spacing:.12em;
-  opacity:0;transition:opacity .5s;
+#dialog-text{
+  font-size:.92rem;color:rgba(238,234,255,.97);line-height:1.88;
+  letter-spacing:.04em;min-height:3.4em;
+  font-family:'Noto Sans JP',sans-serif;font-weight:400;word-break:break-all;
 }
-
-/* ===== スキップボタン ===== */
-#skip-btn{
-  position:absolute;
-  bottom:28px;right:24px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.22);
-  color:rgba(255,255,255,.6);
-  font-size:.68rem;font-family:'Cinzel',serif;
-  letter-spacing:.14em;
-  padding:8px 20px;border-radius:20px;
-  cursor:pointer;
-  display:none;
-  transition:background .2s, color .2s;
-  z-index:10;
+#dialog-cursor{
+  display:none;color:rgba(160,200,255,.9);
+  animation:dqBlink .5s step-end infinite;
+  font-size:.78rem;margin-left:1px;vertical-align:middle;
 }
-#skip-btn:hover{background:rgba(255,255,255,.18);color:#fff;}
+@keyframes dqBlink{0%,100%{opacity:1}50%{opacity:0}}
+#dialog-hint{
+  text-align:right;margin-top:5px;font-size:.58rem;
+  color:rgba(255,255,255,.18);letter-spacing:.1em;font-family:'Cinzel',serif;
+  opacity:0;transition:opacity .5s 1.2s;
+}
+#reveal-dialog.show-dialog #dialog-hint{opacity:1;}
 
 @keyframes textAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
@@ -242,8 +175,6 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 <body>
 <div id="particles"></div>
 
-<!-- ====== REVEAL STAGE ====== -->
-<!-- クリックはJS側でハンドリング（スキップ vs 次へを振り分けるため） -->
 <div id="reveal-stage">
   <div id="reveal-bg"></div>
   <div id="light-beam-R"></div>
@@ -253,32 +184,29 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
   <div class="sr-beam" id="srb2" style="left:35%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
   <div class="sr-beam" id="srb3" style="left:65%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
   <div class="sr-beam" id="srb4" style="left:85%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
-
+  <!-- カード（上部） -->
   <div id="reveal-card-area">
-    <!-- カードフリップ構造 -->
     <div id="flip-wrapper">
       <div id="flip-inner">
-        <!-- 裏面（初期表示） -->
-        <!-- 注: 2707.png を index.html と同じフォルダに置いてください -->
-        <div class="flip-face" id="flip-back-face">
-          <img src="2707.png" alt="card back">
-        </div>
-        <!-- 表面（フリップ後） -->
+        <!-- 裏面: 2707.png を index.html と同フォルダに配置 -->
+        <div class="flip-face" id="flip-back-face"><img src="2707.png" alt="card back"></div>
+        <!-- 表面 -->
         <div class="flip-face" id="flip-front-face">
           <img id="reveal-img" src="" alt="">
           <div id="reveal-icon-big"></div>
         </div>
       </div>
     </div>
-
     <div id="reveal-rarity-text"></div>
-    <div id="reveal-name-text"></div>
-    <div id="reveal-flavor"></div>
-    <div id="reveal-tap-hint">— タップして次へ —</div>
   </div>
-
-  <!-- スキップボタン（タイプライター中のみ表示） -->
-  <button id="skip-btn">SKIP ▶</button>
+  <!-- DQダイアログボックス（下部固定） -->
+  <div id="reveal-dialog">
+    <div id="dialog-box">
+      <div id="dialog-name-tag">シャル</div>
+      <div id="dialog-text"><span id="dialog-cursor">▼</span></div>
+    </div>
+    <div id="dialog-hint">TAP TO SKIP &nbsp;/&nbsp; ▼ NEXT</div>
+  </div>
 </div>
 
 <header>
@@ -292,6 +220,7 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 <main>
   <div class="gacha-buttons">
     <button class="btn-gacha" id="btn1" onclick="doGacha(1)">✦ 単発ガチャ</button>
+    
   </div>
   <div id="result-area"><div id="result-grid"></div></div>
   <div id="stats-wrap">
@@ -321,11 +250,6 @@ let stats={N:0,HN:0,R:0,SR:0,total:0};
 let history=[];
 let audioCtx=null;
 let revealResolve=null;
-
-// ── タイプライター状態管理 ──────────────────────────────
-let currentRevealCard=null;
-let twTimers=[];        // setTimeout/setInterval のID群
-let twRunning=false;    // タイプライター進行中フラグ
 
 const CARDS=[
   {id:'N_001',name:'見張り番のひと休み',rarity:'N',file:'00001_N.png',flavor:'この槍、重いんだよね。…でも、これがあれば誰かを守れる気がするから。'},
@@ -412,14 +336,12 @@ const CARDS=[
   {id:'SR_082',name:'氷瀑の誓剣姫',rarity:'SR',file:'00082_SR.png',flavor:'氷の誓いは、決して砕けない。'},
   {id:'SR_083',name:'紅聖の断罪騎士',rarity:'SR',file:'00083_SR.png',flavor:'逃がさない。この刃は届く。'},
   {id:'SR_084',name:'緋翼の機槍騎士',rarity:'SR',file:'00084_SR.png',flavor:'その願いごと、貫くよ。'},
-  {id:'SR_085',name:'聖焔の白翼姫',rarity:'SR',file:'00085_SR.png',flavor:'まだ、光は消えてない。'},
-];
+  {id:'SR_085',name:'聖焔の白翼姫',rarity:'SR',file:'00085_SR.png',flavor:'まだ、光は消えてない。'},];
 
 const RATES=[
   {rarity:'SR',rate:.018},{rarity:'R',rate:.07},{rarity:'HN',rate:.32},{rarity:'N',rate:.592}
 ];
 
-// ── Audio ──────────────────────────────────────────────
 function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
 
 function playN(){try{const ctx=getAudio(),t=ctx.currentTime;const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.setValueAtTime(330,t);o.frequency.exponentialRampToValueAtTime(495,t+.1);g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.2);}catch(e){}}
@@ -467,7 +389,6 @@ function playSR(){
   }catch(e){}
 }
 
-// ── Particles ─────────────────────────────────────────
 function spawnParticles(color,count){
   const container=document.getElementById('particles');
   for(let i=0;i<count;i++){
@@ -483,112 +404,79 @@ function spawnParticles(color,count){
   }
 }
 
-// ── Utilities ─────────────────────────────────────────
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 
-// ── Typewriter ────────────────────────────────────────
-/**
- * フレーバーテキストをタイプライター表示する
- * @param {string} text  表示テキスト
- * @param {number} startDelay  開始までの遅延(ms)
- * @param {string} color  CSSカラー文字列
- * @param {string} [extraStyle]  追加スタイル（SR用のtext-shadowなど）
- */
-function typewriterFlavor(text, startDelay, color, extraStyle=''){
-  const el=document.getElementById('reveal-flavor');
-  el.textContent='';
-  el.style.opacity='0';
-  el.style.color=color;
-  el.style.cssText += extraStyle;
-  el.style.borderTopColor='rgba(255,255,255,.1)';
+// ── タイプライター状態 ──────────────────────────
+let currentRevealCard=null,twTimers=[],twRunning=false,dialogDone=false;
 
-  twRunning=true;
-  document.getElementById('skip-btn').style.display='block';
+// チッ音（DQ文字送り）
+function playTick(){
+  try{
+    const ctx=getAudio(),t=ctx.currentTime;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);o.type='square';
+    o.frequency.setValueAtTime(880,t);o.frequency.exponentialRampToValueAtTime(580,t+.018);
+    g.gain.setValueAtTime(.026,t);g.gain.exponentialRampToValueAtTime(.001,t+.022);
+    o.start(t);o.stop(t+.025);
+  }catch(e){}
+}
 
-  // 開始遅延タイマー
-  const t1=setTimeout(()=>{
-    el.style.opacity='1';
-    let i=0;
-    // カーソルをHTMLで挿入（textContent→innerHTML切り替え）
-    const iid=setInterval(()=>{
-      if(i<text.length){
-        el.innerHTML=text.slice(0,i+1)+'<span class="tw-cursor"> </span>';
-        i++;
-      }else{
-        clearInterval(iid);
-        el.textContent=text; // カーソル除去・完全表示
-        twRunning=false;
-        twTimers=[];
-        document.getElementById('skip-btn').style.display='none';
-        // 「次へ」ヒント表示
-        const hint=document.getElementById('reveal-tap-hint');
-        hint.style.opacity='1';
-      }
-    },55); // 55ms/文字 ≒ 自然な発話ペース
-    twTimers.push(iid);
+// 句読点ポーズ定義
+const PAUSE={'。':160,'、':80,'…':220,'！':130,'？':130,'─':60,'—':60};
+
+function dqScroll(text,startDelay,speakerName){
+  const textEl=document.getElementById('dialog-text');
+  const cursor=document.getElementById('dialog-cursor');
+  const nameTag=document.getElementById('dialog-name-tag');
+  const dialog=document.getElementById('reveal-dialog');
+  textEl.textContent='';cursor.style.display='none';
+  nameTag.textContent=speakerName||'シャル';
+  dialog.classList.add('show-dialog');
+  twRunning=true;dialogDone=false;
+  let i=0,displayed='';
+  const startTid=setTimeout(function tick(){
+    if(i>=text.length){
+      textEl.textContent=text;cursor.style.display='inline';
+      twRunning=false;dialogDone=true;twTimers=[];return;
+    }
+    const ch=text[i];displayed+=ch;textEl.textContent=displayed;
+    if(ch.trim()&&!PAUSE[ch]&&ch!=='　') playTick();
+    const extra=PAUSE[ch]||0;
+    i++;twTimers=[setTimeout(tick,38+extra)];
   },startDelay);
-  twTimers.push(t1);
+  twTimers=[startTid];
 }
 
-/** スキップ：タイプライターを止めて全文即表示 */
-function skipTypewriter(){
-  twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});
-  twTimers=[];
-  twRunning=false;
-  const card=currentRevealCard;
-  if(card){
-    const el=document.getElementById('reveal-flavor');
-    el.textContent=card.flavor||'';
-    el.style.opacity='1';
-  }
-  document.getElementById('skip-btn').style.display='none';
-  document.getElementById('reveal-tap-hint').style.opacity='1';
-}
-
-/** ステージ全体クリックハンドラ */
-function handleStageClick(e){
-  // スキップボタン自体のクリックは別処理
-  if(e.target===document.getElementById('skip-btn'))return;
-  if(twRunning){
-    skipTypewriter();
-  }else{
-    resolveReveal();
-  }
-}
-
-// ── Stage Management ──────────────────────────────────
-function resetStage(){
-  // タイプライターキャンセル
+function skipDialog(){
   twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});
   twTimers=[];twRunning=false;
+  if(currentRevealCard) document.getElementById('dialog-text').textContent=currentRevealCard.flavor||'';
+  document.getElementById('dialog-cursor').style.display='inline';
+  dialogDone=true;
+}
 
+function handleStageClick(){
+  if(twRunning){skipDialog();}
+  else if(dialogDone){resolveReveal();}
+}
+
+function resetStage(){
+  twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});
+  twTimers=[];twRunning=false;dialogDone=false;
   document.getElementById('light-beam-R').className='';
   document.getElementById('light-cross').className='';
   document.getElementById('sr-aura').className='';
-  ['srb1','srb2','srb3','srb4'].forEach(id=>{document.getElementById(id).className='sr-beam';});
-
-  // フリップをトランジションなしでリセット
+  ['srb1','srb2','srb3','srb4'].forEach(id=>document.getElementById(id).className='sr-beam');
   const inner=document.getElementById('flip-inner');
-  inner.style.transition='none';
-  inner.classList.remove('flipped','flipped-bounce');
-  void inner.offsetWidth; // reflow
-  inner.style.transition='';
-
-  // フリップラッパーのintroアニメもリセット
+  inner.style.transition='none';inner.classList.remove('flipped-bounce');
+  void inner.offsetWidth;inner.style.transition='';
   const wrapper=document.getElementById('flip-wrapper');
-  wrapper.classList.remove('intro-in');
-  void wrapper.offsetWidth;
-
-  // テキスト類リセット
-  const rar=document.getElementById('reveal-rarity-text');
-  rar.className='';rar.style.cssText='';
-  document.getElementById('reveal-name-text').className='';
-  document.getElementById('reveal-name-text').style.cssText='';
-  const fl=document.getElementById('reveal-flavor');
-  fl.style.cssText='';fl.style.opacity='0';fl.textContent='';fl.className='';
-  const hint=document.getElementById('reveal-tap-hint');
-  hint.style.opacity='0';hint.style.transition='opacity .5s';
-  document.getElementById('skip-btn').style.display='none';
+  wrapper.classList.remove('intro-in');void wrapper.offsetWidth;
+  document.getElementById('reveal-rarity-text').className='';
+  document.getElementById('reveal-rarity-text').style.cssText='';
+  document.getElementById('reveal-dialog').classList.remove('show-dialog');
+  document.getElementById('dialog-text').textContent='';
+  document.getElementById('dialog-cursor').style.display='none';
   document.getElementById('reveal-img').style.boxShadow='';
 }
 
@@ -596,139 +484,68 @@ function setRevealCard(card){
   currentRevealCard=card;
   const img=document.getElementById('reveal-img');
   const icon=document.getElementById('reveal-icon-big');
-  if(card.file){
-    img.src=IMG+card.file;
-    img.style.display='block';
-    icon.style.display='none';
-  }else{
-    img.style.display='none';
-    icon.textContent=ICONS[card.rarity]||'🃏';
-    icon.style.display='block';
-  }
-  document.getElementById('reveal-name-text').textContent=card.name;
-  // フレーバーテキストはここでは設定しない（タイプライターが担当）
+  if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}
+  else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}
 }
+function flipCard(){document.getElementById('flip-inner').classList.add('flipped-bounce');}
+function showCardBack(){const w=document.getElementById('flip-wrapper');void w.offsetWidth;w.classList.add('intro-in');}
 
-/** フリップ実行（アニメーション付き） */
-function flipCard(){
-  const inner=document.getElementById('flip-inner');
-  inner.classList.add('flipped-bounce');
-}
-
-/** カードスライドイン（裏面表示） */
-function showCardBack(){
-  const wrapper=document.getElementById('flip-wrapper');
-  void wrapper.offsetWidth;
-  wrapper.classList.add('intro-in');
-}
-
-// ── Reveal Functions ──────────────────────────────────
 async function showRevealNHN(card){
   return new Promise(async resolve=>{
-    revealResolve=resolve;
-    resetStage();
+    revealResolve=resolve;resetStage();
     document.getElementById('reveal-stage').classList.add('show');
     setRevealCard(card);
-
     const rar=document.getElementById('reveal-rarity-text');
-    rar.textContent=card.rarity;
-    rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';
-
-    // 裏面スライドイン
-    await wait(50);
-    showCardBack();
-    // 裏面を少し見せてからフリップ
-    await wait(600);
-    flipCard();
-    // フリップ完了後にテキスト表示
-    await wait(750);
-    rar.classList.add('show-text');
-    document.getElementById('reveal-name-text').classList.add('show-text');
-    // タイプライター開始（少し間を置く）
-    typewriterFlavor(
-      card.flavor||'',
-      600,
-      card.rarity==='HN'?'rgba(200,215,225,.85)':'rgba(232,223,200,.7)'
-    );
+    rar.textContent=card.rarity;rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';
+    await wait(60);showCardBack();
+    await wait(600);flipCard();
+    await wait(700);rar.classList.add('show-text');
+    dqScroll(card.flavor||'',480,card.speaker||'シャル');
   });
 }
 
 async function showRevealR(card){
   return new Promise(async resolve=>{
-    revealResolve=resolve;
-    resetStage();
+    revealResolve=resolve;resetStage();
     document.getElementById('reveal-stage').classList.add('show');
     setRevealCard(card);
     document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';
-
     const rar=document.getElementById('reveal-rarity-text');
     rar.textContent='R A R E';rar.style.color='var(--R)';
-
-    // 裏面スライドイン
-    await wait(50);
-    showCardBack();
-    await wait(400);
-    // 光柱演出
-    document.getElementById('light-beam-R').classList.add('active');
-    await wait(500);
-    document.getElementById('light-cross').classList.add('active');
-    // 演出ピークでフリップ
-    await wait(200);
-    flipCard();
-    await wait(750);
-    rar.classList.add('show-text');
-    document.getElementById('reveal-name-text').classList.add('show-text');
-    // タイプライター
-    typewriterFlavor(card.flavor||'', 700, 'rgba(180,210,255,.85)');
+    await wait(60);showCardBack();
+    await wait(400);document.getElementById('light-beam-R').classList.add('active');
+    await wait(500);document.getElementById('light-cross').classList.add('active');
+    await wait(200);flipCard();
+    await wait(700);rar.classList.add('show-text');
+    dqScroll(card.flavor||'',580,card.speaker||'シャル');
   });
 }
 
 async function showRevealSR(card){
   return new Promise(async resolve=>{
-    revealResolve=resolve;
-    resetStage();
+    revealResolve=resolve;resetStage();
     document.getElementById('reveal-stage').classList.add('show');
     setRevealCard(card);
     document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';
-
     const rar=document.getElementById('reveal-rarity-text');
     rar.textContent='SUPER RARE';rar.style.color='var(--SR)';
-
-    // 裏面スライドイン
-    await wait(50);
-    showCardBack();
+    await wait(60);showCardBack();
+    await wait(300);document.getElementById('sr-aura').classList.add('active');
     await wait(300);
-    // オーラ・ビーム
-    document.getElementById('sr-aura').classList.add('active');
-    await wait(300);
-    ['srb1','srb2','srb3','srb4'].forEach((id,i)=>{
-      setTimeout(()=>document.getElementById(id).classList.add('active'),i*120);
-    });
-    await wait(700);
-    spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);
-    // 演出クライマックスでフリップ
+    ['srb1','srb2','srb3','srb4'].forEach((id,i)=>
+      setTimeout(()=>document.getElementById(id).classList.add('active'),i*120));
+    await wait(700);spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);
     flipCard();
-    await wait(750);
-    rar.classList.add('show-text');
-    document.getElementById('reveal-name-text').classList.add('show-text');
-    // タイプライター（SR専用スタイル）
-    typewriterFlavor(
-      card.flavor||'',
-      900,
-      'rgba(240,201,106,.9)',
-      'text-shadow:0 0 20px rgba(192,96,255,.4);font-size:.88rem;letter-spacing:.05em;'
-    );
+    await wait(700);rar.classList.add('show-text');
+    dqScroll(card.flavor||'',780,card.speaker||'シャル');
   });
 }
 
 function resolveReveal(){
-  // タイプライター中なら先にスキップ
-  if(twRunning){skipTypewriter();return;}
   document.getElementById('reveal-stage').classList.remove('show');
   if(revealResolve){revealResolve();revealResolve=null;}
 }
 
-// ── Gacha Logic ───────────────────────────────────────
 function rollRarity(){const r=Math.random();let a=0;for(const{rarity,rate}of RATES){a+=rate;if(r<a)return rarity;}return 'N';}
 function pickCard(r){const p=CARDS.filter(c=>c.rarity===r);return p[Math.floor(Math.random()*p.length)];}
 
@@ -740,7 +557,7 @@ function addCardToGrid(card){
     el.innerHTML=`<img src="${IMG}${card.file}" alt="${card.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <div class="card-no-image" style="display:none"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div></div>
       <div class="card-label"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-name-text">${card.name}</div></div>`;
-  }else{
+  } else {
     el.innerHTML=`<div class="card-no-image"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div><div style="font-size:.75rem;margin-top:6px;font-weight:700">${card.name}</div></div>`;
   }
   g.appendChild(el);
@@ -749,6 +566,7 @@ function addCardToGrid(card){
 
 async function doGacha(n){
   document.getElementById('btn1').disabled=true;
+  
   document.getElementById('result-grid').innerHTML='';
   const results=[];
   for(let i=0;i<n;i++){
@@ -765,6 +583,7 @@ async function doGacha(n){
   }
   renderStats();renderHistory();
   document.getElementById('btn1').disabled=false;
+  
 }
 
 function renderStats(){
@@ -794,13 +613,7 @@ function resetAll(){
   renderStats();
 }
 
-// ── イベントリスナー設定 ──────────────────────────────
-document.getElementById('reveal-stage').addEventListener('click', handleStageClick);
-document.getElementById('skip-btn').addEventListener('click', e=>{
-  e.stopPropagation();
-  skipTypewriter();
-});
-
+document.getElementById('reveal-stage').addEventListener('click',handleStageClick);
 renderStats();
 </script>
 </body>
