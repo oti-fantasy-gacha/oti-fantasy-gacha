@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>oti-fantasy ガチャシミュレーター</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>双聖の旅路 -Threads of Fate-</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -12,43 +12,123 @@
   --N:#9da8b0;--HN:#b8c4cc;--R:#4a9eff;--SR:#c060ff;--UR:#ff8c00;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;
-  background-image:radial-gradient(ellipse at 20% 20%,rgba(100,60,180,.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(212,168,67,.08) 0%,transparent 50%);}
-
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Noto Sans JP',sans-serif;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse at 20% 20%,rgba(100,60,180,.15) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 80%,rgba(212,168,67,.08) 0%,transparent 50%);
+}
 #particles{position:fixed;inset:0;pointer-events:none;z-index:150;overflow:hidden;}
 .particle{position:absolute;animation:particleFly var(--dur,1.5s) ease-out forwards;}
 @keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0) rotate(360deg)}}
-
-/* ===== REVEAL STAGE ===== */
 #reveal-stage{display:none;position:fixed;inset:0;z-index:200;cursor:pointer;overflow:hidden;}
 #reveal-stage.show{display:block;}
 #reveal-bg{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .4s;}
 #reveal-stage.show #reveal-bg{opacity:1;}
-
-/* R: 光柱 */
 #light-beam-R{position:absolute;left:50%;top:0;width:4px;height:0;background:linear-gradient(to bottom,transparent,#4a9eff,#fff,#4a9eff,transparent);transform:translateX(-50%);opacity:0;filter:blur(2px);border-radius:4px;}
 #light-beam-R.active{animation:beamDown .6s ease forwards;}
 @keyframes beamDown{0%{height:0;opacity:0}60%{height:100vh;opacity:1}100%{height:100vh;opacity:.4}}
 #light-cross{position:absolute;top:50%;left:0;width:0;height:2px;background:linear-gradient(to right,transparent,#4a9eff,#fff,#4a9eff,transparent);transform:translateY(-50%);opacity:0;}
 #light-cross.active{animation:crossExpand .4s ease .5s forwards;}
 @keyframes crossExpand{0%{width:0;left:50%;opacity:0}100%{width:100%;left:0;opacity:.6}}
-
-/* SR: オーラ＋光柱 */
 #sr-aura{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at center,rgba(192,96,255,.6) 0%,rgba(212,168,67,.3) 40%,transparent 70%);}
 #sr-aura.active{animation:auraGlow 1.2s ease forwards;}
 @keyframes auraGlow{0%{opacity:0}40%{opacity:1}100%{opacity:.5}}
 .sr-beam{position:absolute;top:0;width:2px;height:0;opacity:0;filter:blur(1px);}
 .sr-beam.active{animation:srBeamDown 1s ease forwards;}
 @keyframes srBeamDown{0%{height:0;opacity:0}50%{opacity:1}100%{height:100vh;opacity:.5}}
+/* reveal-card-area は下のFLIPセクションで再定義 */
+#reveal-card-area.show-card{animation:cardAppear .5s ease forwards;}
+@keyframes cardAppear{from{opacity:0;transform:scale(.5) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
+#reveal-img{width:min(220px,55vw);border-radius:10px;display:block;}
+#reveal-icon-big{font-size:5rem;display:none;text-align:center;}
+#reveal-rarity-text{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;margin-top:14px;letter-spacing:.25em;text-shadow:0 0 30px currentColor;opacity:0;}
+#reveal-rarity-text.show-text{animation:textAppear .4s ease .3s forwards;}
+#reveal-name-text{font-size:.95rem;margin-top:6px;color:var(--text);opacity:0;}
+#reveal-name-text.show-text{animation:textAppear .4s ease .5s forwards;}
+#reveal-flavor{max-width:min(320px,80vw);margin-top:14px;font-size:.82rem;line-height:1.7;color:rgba(232,223,200,.85);text-align:center;font-style:italic;letter-spacing:.03em;opacity:0;border-top:1px solid rgba(255,255,255,.1);padding-top:12px;}
+#reveal-flavor.show-flavor-N{animation:textAppear .5s ease .4s forwards;}
+#reveal-flavor.show-flavor-HN{animation:textAppear .5s ease .5s forwards;}
+#reveal-flavor.show-flavor-R{animation:textAppear .6s ease .9s forwards;}
+#reveal-flavor.show-flavor-SR{animation:flavorFadeSR 1s ease 1.4s forwards;font-size:.88rem;color:rgba(240,201,106,.9);text-shadow:0 0 20px rgba(192,96,255,.4);}
+@keyframes flavorFadeSR{0%{opacity:0;transform:translateY(8px);letter-spacing:.08em}100%{opacity:1;transform:none;letter-spacing:.05em}}
+#reveal-tap-hint{font-size:.68rem;color:rgba(255,255,255,.28);margin-top:20px;letter-spacing:.12em;opacity:0;}
+#reveal-tap-hint.show-text{animation:textAppear .4s ease .7s forwards;}
+#reveal-tap-hint.show-text-sr{animation:textAppear .4s ease 1.8s forwards;}
+@keyframes textAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* ── カード表示エリア（上部・ダイアログ分を除く） ── */
-#reveal-card-area{
-  position:absolute;top:0;left:0;right:0;bottom:152px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:20px 20px 8px;pointer-events:none;
-}
+/* ===== HEADER ===== */
+header{text-align:center;padding:40px 20px 20px;border-bottom:1px solid rgba(212,168,67,.2);}
+header h1{font-family:'Cinzel',serif;font-size:clamp(1.4rem,4vw,2.2rem);color:var(--gold);letter-spacing:.15em;text-shadow:0 0 30px rgba(212,168,67,.4);line-height:1.3;}
+.header-subtitle{font-family:'Cinzel',serif;font-size:clamp(.65rem,2vw,.85rem);color:var(--gold-dark);letter-spacing:.2em;margin-top:5px;}
+header p{color:var(--text-dim);font-size:.82rem;margin-top:6px;}
 
-/* カードフリップ */
+/* ===== RPG MESSAGE WINDOW ===== */
+#rpg-window{max-width:700px;margin:14px auto 0;padding:0 16px 14px;}
+.rpg-box{background:rgba(8,6,20,.88);border:2px solid rgba(212,168,67,.35);border-radius:6px;padding:12px 16px 10px;position:relative;box-shadow:0 0 20px rgba(212,168,67,.08),inset 0 0 30px rgba(0,0,0,.4);min-height:60px;cursor:pointer;user-select:none;}
+.rpg-box::before{content:'';position:absolute;inset:3px;border:1px solid rgba(212,168,67,.12);border-radius:3px;pointer-events:none;}
+.rpg-box::after{content:'◆';position:absolute;bottom:8px;right:12px;font-size:.55rem;color:var(--gold);opacity:.5;animation:blink 1.2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:.8}}
+.rpg-speaker{font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);letter-spacing:.12em;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.rpg-speaker::before{content:'▶';font-size:.5rem;color:var(--gold-dark);}
+.rpg-text{font-size:clamp(.8rem,.9rem,1rem);line-height:1.75;color:var(--text);letter-spacing:.04em;min-height:1.75em;}
+.rpg-cursor{display:inline-block;width:2px;height:.9em;background:var(--gold);margin-left:2px;vertical-align:middle;animation:cursorBlink .7s step-end infinite;}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ===== RARE HISTORY ===== */
+#rare-history-wrap{max-width:900px;margin:12px auto 0;padding:0 16px;}
+#rare-history-label{font-size:.7rem;color:var(--gold-dark);letter-spacing:.1em;margin-bottom:5px;font-family:'Cinzel',serif;}
+#rare-history{display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;min-height:32px;scrollbar-width:thin;scrollbar-color:var(--gold-dark) transparent;}
+.hist-chip{flex-shrink:0;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;border:1px solid currentColor;white-space:nowrap;}
+
+/* ===== MAIN ===== */
+main{max-width:900px;margin:0 auto;padding:20px 16px 80px;}
+.gacha-buttons{display:flex;gap:14px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.btn-gacha{font-family:'Cinzel',serif;font-size:clamp(.9rem,3vw,1rem);letter-spacing:.1em;padding:clamp(14px,4vw,16px) clamp(28px,8vw,40px);border:2px solid var(--gold);background:linear-gradient(135deg,rgba(212,168,67,.15),rgba(212,168,67,.05));color:var(--gold-light);cursor:pointer;border-radius:4px;position:relative;overflow:hidden;transition:all .25s ease;min-width:160px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.btn-gacha::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,67,.3),transparent);opacity:0;transition:opacity .25s;}
+.btn-gacha:hover::before,.btn-gacha:active::before{opacity:1;}
+.btn-gacha:hover{box-shadow:0 0 24px rgba(212,168,67,.35);transform:translateY(-1px);}
+.btn-gacha:active{transform:translateY(1px);}
+.btn-gacha:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+#result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
+.card{border-radius:8px;position:relative;background:var(--bg2);border:2px solid rgba(255,255,255,.08);overflow:hidden;transition:transform .2s;opacity:0;}
+.card.visible{animation:cardIn .35s ease forwards;}
+.card:hover{transform:translateY(-4px);}
+.card img{width:100%;display:block;}
+.card-no-image{width:100%;aspect-ratio:5/7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;text-align:center;}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:none}}
+.card.rarity-SR{animation:cardIn .35s ease forwards,glowSR 2s ease-in-out infinite alternate;border-width:3px;}
+.card.rarity-R{animation:cardIn .35s ease forwards,glowR 2s ease-in-out infinite alternate;}
+@keyframes glowSR{from{box-shadow:0 0 10px var(--glow-color)}to{box-shadow:0 0 25px var(--glow-color),0 0 50px var(--glow-color)}}
+@keyframes glowR{from{box-shadow:0 0 6px rgba(74,158,255,.3)}to{box-shadow:0 0 18px rgba(74,158,255,.6)}}
+.card.rarity-N{border-color:var(--N);}.card.rarity-HN{border-color:var(--HN);}.card.rarity-R{border-color:var(--R);--glow-color:rgba(74,158,255,.5);}.card.rarity-SR{border-color:var(--SR);--glow-color:rgba(192,96,255,.6);}
+.card-label{padding:6px 8px;font-size:.7rem;line-height:1.3;background:rgba(0,0,0,.65);}
+.card-rarity-tag{font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;}
+.card-name-text{font-weight:700;margin-top:2px;}
+.card-icon{font-size:2.2rem;margin-bottom:8px;}
+#stats-wrap{margin-top:24px;padding:16px 18px;background:var(--bg2);border:1px solid rgba(212,168,67,.15);border-radius:8px;}
+#stats-title{font-family:'Cinzel',serif;font-size:.76rem;color:var(--gold);letter-spacing:.1em;margin-bottom:10px;}
+.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.stat-label{width:36px;text-align:right;font-family:'Cinzel',serif;font-size:.68rem;}
+.stat-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.stat-bar{height:100%;border-radius:3px;transition:width .5s ease;}
+.stat-count{width:40px;text-align:right;color:var(--text-dim);font-size:.75rem;}
+#rate-toggle{display:block;margin:18px auto 0;background:none;border:1px solid rgba(212,168,67,.25);color:var(--text-dim);font-size:.75rem;padding:8px 22px;border-radius:4px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .2s;touch-action:manipulation;}
+#rate-toggle:hover{border-color:var(--gold);color:var(--gold);}
+#rate-table{display:none;margin-top:14px;}
+#rate-table.show{display:block;}
+table{width:100%;border-collapse:collapse;font-size:.78rem;}
+th,td{padding:7px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);}
+th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
+#btn-reset{display:block;margin:14px auto 0;background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-dim);font-size:.72rem;padding:8px 20px;border-radius:4px;cursor:pointer;transition:all .2s;touch-action:manipulation;}
+#btn-reset:hover{border-color:rgba(255,80,80,.4);color:#ff8080;}
+.c-N{color:var(--N)}.c-HN{color:var(--HN)}.c-R{color:var(--R)}.c-SR{color:var(--SR)}
+.bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}
+@media(max-width:480px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px;}.btn-gacha{min-width:140px;padding:14px 20px;}}
+
+/* ===== CARD FLIP ===== */
+#reveal-card-area{position:absolute;top:0;left:0;right:0;bottom:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 20px 8px;pointer-events:none;}
 #flip-wrapper{width:min(200px,50vw);aspect-ratio:5/7;perspective:900px;flex-shrink:0;}
 #flip-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;}
 #flip-inner.flipped-bounce{animation:flipBounce .65s cubic-bezier(.4,0,.2,1) forwards;}
@@ -65,111 +145,23 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 #flip-front-face{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;}
 #reveal-img{width:100%;height:100%;object-fit:cover;display:block;}
 #reveal-icon-big{font-size:4rem;display:none;text-align:center;}
-@keyframes backFaceIn{from{opacity:0;transform:scale(.82) translateY(22px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes backFaceIn{from{opacity:0;transform:scale(.82) translateY(22px)}to{opacity:1;transform:none}}
 #flip-wrapper.intro-in{animation:backFaceIn .42s cubic-bezier(.2,.8,.3,1) forwards;}
-
-/* レアリティテキスト */
 #reveal-rarity-text{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;margin-top:10px;letter-spacing:.28em;text-shadow:0 0 30px currentColor;opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s;}
 #reveal-rarity-text.show-text{opacity:1;transform:translateY(0);}
 
-/* ── DQダイアログボックス（下部固定） ── */
-#reveal-dialog{
-  position:absolute;bottom:0;left:0;right:0;padding:0 12px 14px;
-  opacity:0;transform:translateY(12px);
-  transition:opacity .32s ease,transform .32s ease;
-  pointer-events:auto;
-}
+/* ===== IN-REVEAL DQ DIALOG ===== */
+#reveal-dialog{position:absolute;bottom:0;left:0;right:0;padding:0 12px 14px;opacity:0;transform:translateY(12px);transition:opacity .32s,transform .32s;pointer-events:auto;}
 #reveal-dialog.show-dialog{opacity:1;transform:translateY(0);}
-#dialog-box{
-  position:relative;
-  background:rgba(5,4,16,.93);
-  border:2px solid rgba(80,110,190,.5);
-  border-radius:5px;
-  padding:14px 18px 13px;min-height:88px;
-  box-shadow:0 0 0 1px rgba(20,40,100,.5),inset 0 1px 0 rgba(100,140,255,.07),0 4px 24px rgba(0,0,0,.5);
-}
-#dialog-box::before,#dialog-box::after{content:'◆';position:absolute;font-size:.42rem;color:rgba(80,110,190,.55);line-height:1;}
-#dialog-box::before{top:5px;left:6px;}
-#dialog-box::after{bottom:5px;right:6px;}
-#dialog-name-tag{
-  position:absolute;top:-14px;left:10px;
-  background:rgba(5,4,16,.96);border:2px solid rgba(80,110,190,.5);border-radius:3px;
-  padding:1px 12px 2px;font-size:.74rem;font-weight:700;
-  color:rgba(195,215,255,.95);letter-spacing:.06em;white-space:nowrap;
-}
-#dialog-text{
-  font-size:.92rem;color:rgba(238,234,255,.97);line-height:1.88;
-  letter-spacing:.04em;min-height:3.4em;
-  font-family:'Noto Sans JP',sans-serif;font-weight:400;word-break:break-all;
-}
-#dialog-cursor{
-  display:none;color:rgba(160,200,255,.9);
-  animation:dqBlink .5s step-end infinite;
-  font-size:.78rem;margin-left:1px;vertical-align:middle;
-}
+#r-dialog-box{position:relative;background:rgba(5,4,16,.93);border:2px solid rgba(80,110,190,.5);border-radius:5px;padding:14px 18px 13px;min-height:86px;box-shadow:0 0 0 1px rgba(20,40,100,.5),inset 0 1px 0 rgba(100,140,255,.07),0 4px 24px rgba(0,0,0,.5);}
+#r-dialog-box::before,#r-dialog-box::after{content:'◆';position:absolute;font-size:.42rem;color:rgba(80,110,190,.55);line-height:1;}
+#r-dialog-box::before{top:5px;left:6px;}#r-dialog-box::after{bottom:5px;right:6px;}
+#r-dialog-name{position:absolute;top:-14px;left:10px;background:rgba(5,4,16,.96);border:2px solid rgba(80,110,190,.5);border-radius:3px;padding:1px 12px 2px;font-size:.74rem;font-weight:700;color:rgba(195,215,255,.95);letter-spacing:.06em;white-space:nowrap;}
+#r-dialog-text{font-size:.9rem;color:rgba(238,234,255,.97);line-height:1.88;letter-spacing:.04em;min-height:3.3em;font-family:'Noto Sans JP',sans-serif;word-break:break-all;}
+#r-dialog-cursor{display:none;color:rgba(160,200,255,.9);animation:dqBlink .5s step-end infinite;font-size:.78rem;margin-left:1px;vertical-align:middle;}
 @keyframes dqBlink{0%,100%{opacity:1}50%{opacity:0}}
-#dialog-hint{
-  text-align:right;margin-top:5px;font-size:.58rem;
-  color:rgba(255,255,255,.18);letter-spacing:.1em;font-family:'Cinzel',serif;
-  opacity:0;transition:opacity .5s 1.2s;
-}
-#reveal-dialog.show-dialog #dialog-hint{opacity:1;}
-
-@keyframes textAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-
-/* ===== HEADER ===== */
-header{text-align:center;padding:40px 20px 20px;border-bottom:1px solid rgba(212,168,67,.2);}
-header h1{font-family:'Cinzel',serif;font-size:clamp(1.4rem,4vw,2.2rem);color:var(--gold);letter-spacing:.15em;text-shadow:0 0 30px rgba(212,168,67,.4);}
-header p{color:var(--text-dim);font-size:.85rem;margin-top:6px;}
-#rare-history-wrap{max-width:900px;margin:20px auto 0;padding:0 16px;}
-#rare-history-label{font-size:.72rem;color:var(--gold-dark);letter-spacing:.1em;margin-bottom:6px;font-family:'Cinzel',serif;}
-#rare-history{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;min-height:36px;scrollbar-width:thin;scrollbar-color:var(--gold-dark) transparent;}
-.hist-chip{flex-shrink:0;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;border:1px solid currentColor;white-space:nowrap;}
-main{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
-.gacha-buttons{display:flex;gap:16px;justify-content:center;margin-bottom:32px;flex-wrap:wrap;}
-.btn-gacha{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.12em;padding:14px 36px;border:2px solid var(--gold);background:linear-gradient(135deg,rgba(212,168,67,.15),rgba(212,168,67,.05));color:var(--gold-light);cursor:pointer;border-radius:4px;position:relative;overflow:hidden;transition:all .25s ease;}
-.btn-gacha::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,67,.3),transparent);opacity:0;transition:opacity .25s;}
-.btn-gacha:hover::before{opacity:1;}
-.btn-gacha:hover{box-shadow:0 0 24px rgba(212,168,67,.35);transform:translateY(-1px);}
-.btn-gacha:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-#result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
-.card{border-radius:8px;position:relative;background:var(--bg2);border:2px solid rgba(255,255,255,.08);overflow:hidden;transition:transform .2s;opacity:0;}
-.card.visible{animation:cardIn .35s ease forwards;}
-.card:hover{transform:translateY(-4px);}
-.card img{width:100%;display:block;}
-.card-no-image{width:100%;aspect-ratio:5/7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;text-align:center;}
-@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:none}}
-.card.rarity-SR{animation:cardIn .35s ease forwards,glowSR 2s ease-in-out infinite alternate;border-width:3px;}
-.card.rarity-R{animation:cardIn .35s ease forwards,glowR 2s ease-in-out infinite alternate;}
-@keyframes glowSR{from{box-shadow:0 0 10px var(--glow-color)}to{box-shadow:0 0 25px var(--glow-color),0 0 50px var(--glow-color)}}
-@keyframes glowR{from{box-shadow:0 0 6px rgba(74,158,255,.3)}to{box-shadow:0 0 18px rgba(74,158,255,.6)}}
-.card.rarity-N{border-color:var(--N);}
-.card.rarity-HN{border-color:var(--HN);}
-.card.rarity-R{border-color:var(--R);--glow-color:rgba(74,158,255,.5);}
-.card.rarity-SR{border-color:var(--SR);--glow-color:rgba(192,96,255,.6);}
-.card-label{padding:6px 8px;font-size:.7rem;line-height:1.3;background:rgba(0,0,0,.65);}
-.card-rarity-tag{font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;}
-.card-name-text{font-weight:700;margin-top:2px;}
-.card-icon{font-size:2.2rem;margin-bottom:8px;}
-#stats-wrap{margin-top:28px;padding:18px 20px;background:var(--bg2);border:1px solid rgba(212,168,67,.15);border-radius:8px;}
-#stats-title{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold);letter-spacing:.1em;margin-bottom:12px;}
-.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
-.stat-label{width:36px;text-align:right;font-family:'Cinzel',serif;font-size:.68rem;}
-.stat-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
-.stat-bar{height:100%;border-radius:3px;transition:width .5s ease;}
-.stat-count{width:40px;text-align:right;color:var(--text-dim);font-size:.75rem;}
-#rate-toggle{display:block;margin:20px auto 0;background:none;border:1px solid rgba(212,168,67,.25);color:var(--text-dim);font-size:.75rem;padding:7px 20px;border-radius:4px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .2s;}
-#rate-toggle:hover{border-color:var(--gold);color:var(--gold);}
-#rate-table{display:none;margin-top:16px;}
-#rate-table.show{display:block;}
-table{width:100%;border-collapse:collapse;font-size:.78rem;}
-th,td{padding:7px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);}
-th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
-#btn-reset{display:block;margin:16px auto 0;background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-dim);font-size:.72rem;padding:6px 18px;border-radius:4px;cursor:pointer;transition:all .2s;}
-#btn-reset:hover{border-color:rgba(255,80,80,.4);color:#ff8080;}
-.c-N{color:var(--N)}.c-HN{color:var(--HN)}.c-R{color:var(--R)}.c-SR{color:var(--SR)}
-.bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}
-@media(max-width:500px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px}}
+#r-dialog-hint{text-align:right;margin-top:4px;font-size:.58rem;color:rgba(255,255,255,.18);letter-spacing:.1em;font-family:'Cinzel',serif;opacity:0;transition:opacity .5s 1.2s;}
+#reveal-dialog.show-dialog #r-dialog-hint{opacity:1;}
 </style>
 </head>
 <body>
@@ -184,12 +176,12 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
   <div class="sr-beam" id="srb2" style="left:35%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
   <div class="sr-beam" id="srb3" style="left:65%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
   <div class="sr-beam" id="srb4" style="left:85%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
-  <!-- カード（上部） -->
+  <!-- カード上部エリア -->
   <div id="reveal-card-area">
     <div id="flip-wrapper">
       <div id="flip-inner">
-        <!-- 裏面: 2707.png を index.html と同フォルダに配置 -->
-        <div class="flip-face" id="flip-back-face"><img src="2707.png" alt="card back"></div>
+        <!-- 裏面: 2707.png を index.html と同フォルダに置く -->
+        <div class="flip-face" id="flip-back-face"><img src="Shal-card-back.png" alt="card back"></div>
         <!-- 表面 -->
         <div class="flip-face" id="flip-front-face">
           <img id="reveal-img" src="" alt="">
@@ -199,28 +191,37 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
     </div>
     <div id="reveal-rarity-text"></div>
   </div>
-  <!-- DQダイアログボックス（下部固定） -->
+  <!-- DQフレーバーダイアログ（下部） -->
   <div id="reveal-dialog">
-    <div id="dialog-box">
-      <div id="dialog-name-tag">シャル</div>
-      <div id="dialog-text"><span id="dialog-cursor">▼</span></div>
+    <div id="r-dialog-box">
+      <div id="r-dialog-name">シャル</div>
+      <div id="r-dialog-text"><span id="r-dialog-cursor">▼</span></div>
     </div>
-    <div id="dialog-hint">TAP TO SKIP &nbsp;/&nbsp; ▼ NEXT</div>
+    <div id="r-dialog-hint">TAP TO SKIP &nbsp;/&nbsp; ▼ NEXT</div>
   </div>
 </div>
 
 <header>
-  <h1>✦ OTI-FANTASY GACHA ✦</h1>
+  <h1>双聖の旅路</h1>
+  <div class="header-subtitle">— Threads of Fate —</div>
   <p>シャル &amp; メルのカードを集めよう — Demo Ver.</p>
 </header>
+
+<div id="rpg-window">
+  <div class="rpg-box" onclick="skipTypewriter()">
+    <div class="rpg-speaker" id="rpg-speaker">シャル</div>
+    <div class="rpg-text"><span id="rpg-text-inner"></span><span class="rpg-cursor" id="rpg-cursor"></span></div>
+  </div>
+</div>
+
 <div id="rare-history-wrap">
   <div id="rare-history-label">RARE HISTORY — R以上の排出履歴</div>
   <div id="rare-history"></div>
 </div>
+
 <main>
   <div class="gacha-buttons">
     <button class="btn-gacha" id="btn1" onclick="doGacha(1)">✦ 単発ガチャ</button>
-    
   </div>
   <div id="result-area"><div id="result-grid"></div></div>
   <div id="stats-wrap">
@@ -336,245 +337,155 @@ const CARDS=[
   {id:'SR_082',name:'氷瀑の誓剣姫',rarity:'SR',file:'00082_SR.png',flavor:'氷の誓いは、決して砕けない。'},
   {id:'SR_083',name:'紅聖の断罪騎士',rarity:'SR',file:'00083_SR.png',flavor:'逃がさない。この刃は届く。'},
   {id:'SR_084',name:'緋翼の機槍騎士',rarity:'SR',file:'00084_SR.png',flavor:'その願いごと、貫くよ。'},
-  {id:'SR_085',name:'聖焔の白翼姫',rarity:'SR',file:'00085_SR.png',flavor:'まだ、光は消えてない。'},];
-
-const RATES=[
-  {rarity:'SR',rate:.018},{rarity:'R',rate:.07},{rarity:'HN',rate:.32},{rarity:'N',rate:.592}
+  {id:'SR_085',name:'聖焔の白翼姫',rarity:'SR',file:'00085_SR.png',flavor:'まだ、光は消えてない。'},
 ];
 
-function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+const RATES=[{rarity:'SR',rate:.018},{rarity:'R',rate:.07},{rarity:'HN',rate:.32},{rarity:'N',rate:.592}];
 
+const RPG_MESSAGES={
+  idle:[
+    {speaker:'シャル',text:'ここから旅が始まるんだね。…どんなカードが出るかな。'},
+    {speaker:'メル',text:'やってみなきゃわからないよ！さあ、引こう！'},
+    {speaker:'シャル',text:'運命の糸は、引いた者だけが掴める。'},
+    {speaker:'メル',text:'強いカードを引いてみせる！絶対に！'},
+    {speaker:'シャル',text:'…一枚だけ、引いてみよう。'},
+    {speaker:'メル',text:'次こそSRだよ。絶対そう。根拠はないけど。'},
+    {speaker:'シャル',text:'旅は、小さな出会いの積み重ねだって…誰かが言ってた。'},
+    {speaker:'メル',text:'ねえシャル、一緒に引かない？…引くのはアナタだけど。'},
+  ],
+  afterN:[
+    {speaker:'シャル',text:'…うん。次に期待しよう。'},
+    {speaker:'メル',text:'大丈夫！次があるよ！'},
+    {speaker:'シャル',text:'旅の始まりはいつも、平凡なところから。'},
+  ],
+  afterHN:[
+    {speaker:'メル',text:'おっ、いいじゃない！'},
+    {speaker:'シャル',text:'悪くない引きだったね。'},
+    {speaker:'メル',text:'これはこれで、なかなかよいと思う。'},
+  ],
+  afterR:[
+    {speaker:'シャル',text:'……！これは、いいカードだね。'},
+    {speaker:'メル',text:'やったあ！Rだよシャル！'},
+    {speaker:'シャル',text:'光に導かれた一枚。…大切にしよう。'},
+  ],
+  afterSR:[
+    {speaker:'メル',text:'すごい…！シャル、見て！これ、めちゃくちゃ強そう！'},
+    {speaker:'シャル',text:'……運命の一枚、か。これが「双聖の旅路」の答えかもしれない。'},
+    {speaker:'メル',text:'SR！SR出たよ！信じてたもん！ずっと信じてたもん！'},
+  ],
+  afterReset:[
+    {speaker:'シャル',text:'また一から、か。…旅は続く。'},
+    {speaker:'メル',text:'リセット！気持ちも新たにいくよ！'},
+  ],
+};
+
+let typewriterTimer=null,currentFullText='',typewriterDone=false;
+
+function showRpgMessage(cat){
+  const pool=RPG_MESSAGES[cat]||RPG_MESSAGES.idle;
+  const msg=pool[Math.floor(Math.random()*pool.length)];
+  typewriterPlay(msg.speaker,msg.text);
+}
+function typewriterPlay(speaker,text){
+  if(typewriterTimer)clearInterval(typewriterTimer);
+  currentFullText=text;typewriterDone=false;
+  document.getElementById('rpg-speaker').textContent=speaker;
+  const inner=document.getElementById('rpg-text-inner');
+  const cursor=document.getElementById('rpg-cursor');
+  inner.textContent='';cursor.style.display='inline-block';
+  let i=0;
+  typewriterTimer=setInterval(()=>{
+    if(i<text.length){inner.textContent=text.slice(0,++i);}
+    else{clearInterval(typewriterTimer);typewriterTimer=null;typewriterDone=true;cursor.style.display='none';}
+  },50);
+}
+function skipTypewriter(){
+  if(typewriterTimer){clearInterval(typewriterTimer);typewriterTimer=null;document.getElementById('rpg-text-inner').textContent=currentFullText;document.getElementById('rpg-cursor').style.display='none';typewriterDone=true;}
+  else if(typewriterDone){showRpgMessage('idle');}
+}
+
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
 function playN(){try{const ctx=getAudio(),t=ctx.currentTime;const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.setValueAtTime(330,t);o.frequency.exponentialRampToValueAtTime(495,t+.1);g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.2);}catch(e){}}
 function playHN(){try{const ctx=getAudio(),t=ctx.currentTime;[330,440,550].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(0,t+i*.04);g.gain.linearRampToValueAtTime(.1,t+i*.04+.03);g.gain.exponentialRampToValueAtTime(.001,t+i*.04+.25);o.start(t+i*.04);o.stop(t+i*.04+.25);});}catch(e){}}
+function playR(){try{const ctx=getAudio(),t=ctx.currentTime;const bass=ctx.createOscillator(),bg=ctx.createGain();bass.connect(bg);bg.connect(ctx.destination);bass.type='sine';bass.frequency.value=110;bg.gain.setValueAtTime(.3,t);bg.gain.exponentialRampToValueAtTime(.001,t+.8);bass.start(t);bass.stop(t+.8);[523,659,784,1047].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t+.3+i*.1);g.gain.linearRampToValueAtTime(.2,t+.3+i*.1+.05);g.gain.exponentialRampToValueAtTime(.001,t+.3+i*.1+.6);o.start(t+.3+i*.1);o.stop(t+.3+i*.1+.6);});}catch(e){}}
+function playSR(){try{const ctx=getAudio(),t=ctx.currentTime;[1,2,3].forEach(i=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(80,t+i*.15);o.frequency.exponentialRampToValueAtTime(40,t+i*.15+.15);g.gain.setValueAtTime(.4,t+i*.15);g.gain.exponentialRampToValueAtTime(.001,t+i*.15+.2);o.start(t+i*.15);o.stop(t+i*.15+.2);});const fanfare=[261,329,392,261,329,392,523,659,784,1047];const timing=[0,.05,.1,.3,.35,.4,.6,.7,.8,.9];fanfare.forEach((f,i)=>{['triangle','sine'].forEach(type=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=type;o.frequency.value=f;const vol=type==='triangle'?.22:.12;g.gain.setValueAtTime(0,t+timing[i]);g.gain.linearRampToValueAtTime(vol,t+timing[i]+.05);g.gain.exponentialRampToValueAtTime(.001,t+timing[i]+.6);o.start(t+timing[i]);o.stop(t+timing[i]+.6);});});}catch(e){}}
 
-function playR(){
-  try{
-    const ctx=getAudio(),t=ctx.currentTime;
-    const bass=ctx.createOscillator(),bg=ctx.createGain();
-    bass.connect(bg);bg.connect(ctx.destination);bass.type='sine';bass.frequency.value=110;
-    bg.gain.setValueAtTime(.3,t);bg.gain.exponentialRampToValueAtTime(.001,t+.8);
-    bass.start(t);bass.stop(t+.8);
-    [523,659,784,1047].forEach((f,i)=>{
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=f;
-      g.gain.setValueAtTime(0,t+.3+i*.1);g.gain.linearRampToValueAtTime(.2,t+.3+i*.1+.05);
-      g.gain.exponentialRampToValueAtTime(.001,t+.3+i*.1+.6);
-      o.start(t+.3+i*.1);o.stop(t+.3+i*.1+.6);
-    });
-  }catch(e){}
-}
-
-function playSR(){
-  try{
-    const ctx=getAudio(),t=ctx.currentTime;
-    [1,2,3].forEach(i=>{
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);o.type='sine';
-      o.frequency.setValueAtTime(80,t+i*.15);o.frequency.exponentialRampToValueAtTime(40,t+i*.15+.15);
-      g.gain.setValueAtTime(.4,t+i*.15);g.gain.exponentialRampToValueAtTime(.001,t+i*.15+.2);
-      o.start(t+i*.15);o.stop(t+i*.15+.2);
-    });
-    const fanfare=[261,329,392,261,329,392,523,659,784,1047];
-    const timing=[0,.05,.1,.3,.35,.4,.6,.7,.8,.9];
-    fanfare.forEach((f,i)=>{
-      ['triangle','sine'].forEach(type=>{
-        const o=ctx.createOscillator(),g=ctx.createGain();
-        o.connect(g);g.connect(ctx.destination);o.type=type;o.frequency.value=f;
-        const vol=type==='triangle'?.22:.12;
-        g.gain.setValueAtTime(0,t+timing[i]);g.gain.linearRampToValueAtTime(vol,t+timing[i]+.05);
-        g.gain.exponentialRampToValueAtTime(.001,t+timing[i]+.6);
-        o.start(t+timing[i]);o.stop(t+timing[i]+.6);
-      });
-    });
-  }catch(e){}
-}
-
-function spawnParticles(color,count){
-  const container=document.getElementById('particles');
-  for(let i=0;i<count;i++){
-    const p=document.createElement('div');p.className='particle';
-    const size=Math.random()*12+4;
-    const tx=(Math.random()-.5)*window.innerWidth*.9;
-    const ty=-(Math.random()*window.innerHeight*.85+60);
-    const dur=Math.random()*1+.8;
-    const isSquare=Math.random()>.5;
-    p.style.cssText=`width:${size}px;height:${size}px;background:${color};border-radius:${isSquare?'2px':'50%'};left:${20+Math.random()*60}%;top:55%;--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;`;
-    container.appendChild(p);
-    setTimeout(()=>p.remove(),(dur+.2)*1000);
-  }
-}
+function spawnParticles(color,count){const c=document.getElementById('particles');for(let i=0;i<count;i++){const p=document.createElement('div');p.className='particle';const s=Math.random()*12+4,tx=(Math.random()-.5)*window.innerWidth*.9,ty=-(Math.random()*window.innerHeight*.85+60),dur=Math.random()*1+.8,sq=Math.random()>.5;p.style.cssText=`width:${s}px;height:${s}px;background:${color};border-radius:${sq?'2px':'50%'};left:${20+Math.random()*60}%;top:55%;--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;`;c.appendChild(p);setTimeout(()=>p.remove(),(dur+.2)*1000);}}
 
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
-
-// ── タイプライター状態 ──────────────────────────
+// ── リビール内ダイアログ用状態変数（rpg-window の typewriter とは別） ──
 let currentRevealCard=null,twTimers=[],twRunning=false,dialogDone=false;
 
-// チッ音（DQ文字送り）
-function playTick(){
-  try{
-    const ctx=getAudio(),t=ctx.currentTime;
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);o.type='square';
-    o.frequency.setValueAtTime(880,t);o.frequency.exponentialRampToValueAtTime(580,t+.018);
-    g.gain.setValueAtTime(.026,t);g.gain.exponentialRampToValueAtTime(.001,t+.022);
-    o.start(t);o.stop(t+.025);
-  }catch(e){}
-}
+// DQ文字チッ音
+function playTick(){try{const ctx=getAudio(),t=ctx.currentTime;const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='square';o.frequency.setValueAtTime(880,t);o.frequency.exponentialRampToValueAtTime(580,t+.018);g.gain.setValueAtTime(.026,t);g.gain.exponentialRampToValueAtTime(.001,t+.022);o.start(t);o.stop(t+.025);}catch(e){}}
 
-// 句読点ポーズ定義
-const PAUSE={'。':160,'、':80,'…':220,'！':130,'？':130,'─':60,'—':60};
+const DQ_PAUSE={'。':160,'、':80,'…':220,'！':130,'？':130,'─':60,'—':60};
 
 function dqScroll(text,startDelay,speakerName){
-  const textEl=document.getElementById('dialog-text');
-  const cursor=document.getElementById('dialog-cursor');
-  const nameTag=document.getElementById('dialog-name-tag');
+  const textEl=document.getElementById('r-dialog-text');
+  const cursor=document.getElementById('r-dialog-cursor');
+  const nameEl=document.getElementById('r-dialog-name');
   const dialog=document.getElementById('reveal-dialog');
   textEl.textContent='';cursor.style.display='none';
-  nameTag.textContent=speakerName||'シャル';
+  nameEl.textContent=speakerName||'シャル';
   dialog.classList.add('show-dialog');
   twRunning=true;dialogDone=false;
   let i=0,displayed='';
-  const startTid=setTimeout(function tick(){
-    if(i>=text.length){
-      textEl.textContent=text;cursor.style.display='inline';
-      twRunning=false;dialogDone=true;twTimers=[];return;
-    }
+  const go=function tick(){
+    if(i>=text.length){textEl.textContent=text;cursor.style.display='inline';twRunning=false;dialogDone=true;twTimers=[];return;}
     const ch=text[i];displayed+=ch;textEl.textContent=displayed;
-    if(ch.trim()&&!PAUSE[ch]&&ch!=='　') playTick();
-    const extra=PAUSE[ch]||0;
-    i++;twTimers=[setTimeout(tick,38+extra)];
-  },startDelay);
-  twTimers=[startTid];
+    if(ch.trim()&&!DQ_PAUSE[ch]&&ch!=='　')playTick();
+    const extra=DQ_PAUSE[ch]||0;i++;twTimers=[setTimeout(tick,38+extra)];
+  };
+  twTimers=[setTimeout(go,startDelay)];
 }
 
-function skipDialog(){
+function skipRevealDialog(){
   twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});
   twTimers=[];twRunning=false;
-  if(currentRevealCard) document.getElementById('dialog-text').textContent=currentRevealCard.flavor||'';
-  document.getElementById('dialog-cursor').style.display='inline';
+  if(currentRevealCard)document.getElementById('r-dialog-text').textContent=currentRevealCard.flavor||'';
+  document.getElementById('r-dialog-cursor').style.display='inline';
   dialogDone=true;
 }
 
 function handleStageClick(){
-  if(twRunning){skipDialog();}
+  if(twRunning){skipRevealDialog();}
   else if(dialogDone){resolveReveal();}
 }
 
-function resetStage(){
-  twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});
-  twTimers=[];twRunning=false;dialogDone=false;
-  document.getElementById('light-beam-R').className='';
-  document.getElementById('light-cross').className='';
-  document.getElementById('sr-aura').className='';
-  ['srb1','srb2','srb3','srb4'].forEach(id=>document.getElementById(id).className='sr-beam');
-  const inner=document.getElementById('flip-inner');
-  inner.style.transition='none';inner.classList.remove('flipped-bounce');
-  void inner.offsetWidth;inner.style.transition='';
-  const wrapper=document.getElementById('flip-wrapper');
-  wrapper.classList.remove('intro-in');void wrapper.offsetWidth;
-  document.getElementById('reveal-rarity-text').className='';
-  document.getElementById('reveal-rarity-text').style.cssText='';
-  document.getElementById('reveal-dialog').classList.remove('show-dialog');
-  document.getElementById('dialog-text').textContent='';
-  document.getElementById('dialog-cursor').style.display='none';
-  document.getElementById('reveal-img').style.boxShadow='';
-}
-
-function setRevealCard(card){
-  currentRevealCard=card;
-  const img=document.getElementById('reveal-img');
-  const icon=document.getElementById('reveal-icon-big');
-  if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}
-  else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}
-}
 function flipCard(){document.getElementById('flip-inner').classList.add('flipped-bounce');}
 function showCardBack(){const w=document.getElementById('flip-wrapper');void w.offsetWidth;w.classList.add('intro-in');}
 
-async function showRevealNHN(card){
-  return new Promise(async resolve=>{
-    revealResolve=resolve;resetStage();
-    document.getElementById('reveal-stage').classList.add('show');
-    setRevealCard(card);
-    const rar=document.getElementById('reveal-rarity-text');
-    rar.textContent=card.rarity;rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';
-    await wait(60);showCardBack();
-    await wait(600);flipCard();
-    await wait(700);rar.classList.add('show-text');
-    dqScroll(card.flavor||'',480,card.speaker||'シャル');
-  });
+function resetStage(){
+  twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});twTimers=[];twRunning=false;dialogDone=false;
+  document.getElementById('light-beam-R').className='';document.getElementById('light-cross').className='';document.getElementById('sr-aura').className='';
+  ['srb1','srb2','srb3','srb4'].forEach(id=>document.getElementById(id).className='sr-beam');
+  const inner=document.getElementById('flip-inner');
+  inner.style.transition='none';inner.classList.remove('flipped-bounce');void inner.offsetWidth;inner.style.transition='';
+  const wrapper=document.getElementById('flip-wrapper');wrapper.classList.remove('intro-in');void wrapper.offsetWidth;
+  document.getElementById('reveal-rarity-text').className='';document.getElementById('reveal-rarity-text').style.cssText='';
+  document.getElementById('reveal-dialog').classList.remove('show-dialog');
+  document.getElementById('r-dialog-text').textContent='';document.getElementById('r-dialog-cursor').style.display='none';
+  document.getElementById('reveal-img').style.boxShadow='';
 }
-
-async function showRevealR(card){
-  return new Promise(async resolve=>{
-    revealResolve=resolve;resetStage();
-    document.getElementById('reveal-stage').classList.add('show');
-    setRevealCard(card);
-    document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';
-    const rar=document.getElementById('reveal-rarity-text');
-    rar.textContent='R A R E';rar.style.color='var(--R)';
-    await wait(60);showCardBack();
-    await wait(400);document.getElementById('light-beam-R').classList.add('active');
-    await wait(500);document.getElementById('light-cross').classList.add('active');
-    await wait(200);flipCard();
-    await wait(700);rar.classList.add('show-text');
-    dqScroll(card.flavor||'',580,card.speaker||'シャル');
-  });
-}
-
-async function showRevealSR(card){
-  return new Promise(async resolve=>{
-    revealResolve=resolve;resetStage();
-    document.getElementById('reveal-stage').classList.add('show');
-    setRevealCard(card);
-    document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';
-    const rar=document.getElementById('reveal-rarity-text');
-    rar.textContent='SUPER RARE';rar.style.color='var(--SR)';
-    await wait(60);showCardBack();
-    await wait(300);document.getElementById('sr-aura').classList.add('active');
-    await wait(300);
-    ['srb1','srb2','srb3','srb4'].forEach((id,i)=>
-      setTimeout(()=>document.getElementById(id).classList.add('active'),i*120));
-    await wait(700);spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);
-    flipCard();
-    await wait(700);rar.classList.add('show-text');
-    dqScroll(card.flavor||'',780,card.speaker||'シャル');
-  });
-}
-
-function resolveReveal(){
-  document.getElementById('reveal-stage').classList.remove('show');
-  if(revealResolve){revealResolve();revealResolve=null;}
-}
+function setRevealCard(card){currentRevealCard=card;const img=document.getElementById('reveal-img'),icon=document.getElementById('reveal-icon-big');if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}}
+async function showRevealNHN(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);const rar=document.getElementById('reveal-rarity-text');rar.textContent=card.rarity;rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';await wait(60);showCardBack();await wait(600);flipCard();await wait(700);rar.classList.add('show-text');dqScroll(card.flavor||'',480,card.speaker||'シャル');});}
+async function showRevealR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='R A R E';rar.style.color='var(--R)';await wait(60);showCardBack();await wait(400);document.getElementById('light-beam-R').classList.add('active');await wait(500);document.getElementById('light-cross').classList.add('active');await wait(200);flipCard();await wait(700);rar.classList.add('show-text');dqScroll(card.flavor||'',580,card.speaker||'シャル');});}
+async function showRevealSR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='SUPER RARE';rar.style.color='var(--SR)';await wait(60);showCardBack();await wait(300);document.getElementById('sr-aura').classList.add('active');await wait(300);['srb1','srb2','srb3','srb4'].forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('active'),i*120));await wait(700);spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);flipCard();await wait(700);rar.classList.add('show-text');dqScroll(card.flavor||'',780,card.speaker||'シャル');});}
+function resolveReveal(){document.getElementById('reveal-stage').classList.remove('show');if(revealResolve){revealResolve();revealResolve=null;}}
 
 function rollRarity(){const r=Math.random();let a=0;for(const{rarity,rate}of RATES){a+=rate;if(r<a)return rarity;}return 'N';}
 function pickCard(r){const p=CARDS.filter(c=>c.rarity===r);return p[Math.floor(Math.random()*p.length)];}
-
-function addCardToGrid(card){
-  const g=document.getElementById('result-grid');
-  const el=document.createElement('div');
-  el.className=`card rarity-${card.rarity}`;
-  if(card.file){
-    el.innerHTML=`<img src="${IMG}${card.file}" alt="${card.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="card-no-image" style="display:none"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div></div>
-      <div class="card-label"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-name-text">${card.name}</div></div>`;
-  } else {
-    el.innerHTML=`<div class="card-no-image"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div><div style="font-size:.75rem;margin-top:6px;font-weight:700">${card.name}</div></div>`;
-  }
-  g.appendChild(el);
-  setTimeout(()=>el.classList.add('visible'),20);
-}
+function addCardToGrid(card){const g=document.getElementById('result-grid');const el=document.createElement('div');el.className=`card rarity-${card.rarity}`;if(card.file){el.innerHTML=`<img src="${IMG}${card.file}" alt="${card.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="card-no-image" style="display:none"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div></div><div class="card-label"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-name-text">${card.name}</div></div>`;}else{el.innerHTML=`<div class="card-no-image"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div><div style="font-size:.75rem;margin-top:6px;font-weight:700">${card.name}</div></div>`;}g.appendChild(el);setTimeout(()=>el.classList.add('visible'),20);}
 
 async function doGacha(n){
   document.getElementById('btn1').disabled=true;
-  
   document.getElementById('result-grid').innerHTML='';
   const results=[];
-  for(let i=0;i<n;i++){
-    const r=rollRarity();const c=pickCard(r);results.push(c);
-    stats[r]=(stats[r]||0)+1;stats.total++;
-    if(RARE_RARITIES.has(r)){const e=history.find(h=>h.id===c.id);if(e)e.count++;else history.unshift({...c,count:1});}
-  }
+  for(let i=0;i<n;i++){const r=rollRarity(),c=pickCard(r);results.push(c);stats[r]=(stats[r]||0)+1;stats.total++;if(RARE_RARITIES.has(r)){const e=history.find(h=>h.id===c.id);if(e)e.count++;else history.unshift({...c,count:1});}}
+  let lastRarity='N';
   for(const card of results){
+    lastRarity=card.rarity;
     if(card.rarity==='SR'){playSR();spawnParticles('#c060ff',20);spawnParticles('#d4a843',10);await showRevealSR(card);}
     else if(card.rarity==='R'){playR();spawnParticles('#4a9eff',10);await showRevealR(card);}
     else if(card.rarity==='HN'){playHN();await showRevealNHN(card);}
@@ -583,38 +494,17 @@ async function doGacha(n){
   }
   renderStats();renderHistory();
   document.getElementById('btn1').disabled=false;
-  
+  showRpgMessage({SR:'afterSR',R:'afterR',HN:'afterHN',N:'afterN'}[lastRarity]||'idle');
 }
 
-function renderStats(){
-  const w=document.getElementById('stats-rows');const t=stats.total||1;
-  w.innerHTML=['SR','R','HN','N'].map(r=>{
-    const p=Math.round((stats[r]||0)/t*100);
-    return `<div class="stat-row"><div class="stat-label c-${r}">${r}</div><div class="stat-bar-wrap"><div class="stat-bar bar-${r}" style="width:${p}%"></div></div><div class="stat-count">${stats[r]||0}</div></div>`;
-  }).join('');
-  document.getElementById('total-count').textContent=stats.total;
-}
-
-function renderHistory(){
-  const w=document.getElementById('rare-history');
-  if(!history.length){w.innerHTML='';return;}
-  w.innerHTML=history.map(h=>`<span class="hist-chip c-${h.rarity}" style="border-color:var(--${h.rarity})">${h.name}${h.count>1?` ×${h.count}`:''}</span>`).join('');
-}
-
-function toggleRate(){
-  const t=document.getElementById('rate-table');t.classList.toggle('show');
-  document.getElementById('rate-toggle').textContent=t.classList.contains('show')?'▴ 排出率を閉じる':'▾ 排出率を確認する';
-}
-
-function resetAll(){
-  stats={N:0,HN:0,R:0,SR:0,total:0};history=[];
-  document.getElementById('result-grid').innerHTML='';
-  document.getElementById('rare-history').innerHTML='';
-  renderStats();
-}
+function renderStats(){const w=document.getElementById('stats-rows'),t=stats.total||1;w.innerHTML=['SR','R','HN','N'].map(r=>{const p=Math.round((stats[r]||0)/t*100);return`<div class="stat-row"><div class="stat-label c-${r}">${r}</div><div class="stat-bar-wrap"><div class="stat-bar bar-${r}" style="width:${p}%"></div></div><div class="stat-count">${stats[r]||0}</div></div>`;}).join('');document.getElementById('total-count').textContent=stats.total;}
+function renderHistory(){const w=document.getElementById('rare-history');if(!history.length){w.innerHTML='';return;}w.innerHTML=history.map(h=>`<span class="hist-chip c-${h.rarity}" style="border-color:var(--${h.rarity})">${h.name}${h.count>1?` ×${h.count}`:''}</span>`).join('');}
+function toggleRate(){const t=document.getElementById('rate-table');t.classList.toggle('show');document.getElementById('rate-toggle').textContent=t.classList.contains('show')?'▴ 排出率を閉じる':'▾ 排出率を確認する';}
+function resetAll(){stats={N:0,HN:0,R:0,SR:0,total:0};history=[];document.getElementById('result-grid').innerHTML='';document.getElementById('rare-history').innerHTML='';renderStats();showRpgMessage('afterReset');}
 
 document.getElementById('reveal-stage').addEventListener('click',handleStageClick);
 renderStats();
+setTimeout(()=>showRpgMessage('idle'),300);
 </script>
 </body>
 </html>
