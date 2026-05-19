@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>双聖の旅路 -Threads of Fate-</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oti-fantasy ガチャシミュレーター</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -13,231 +13,193 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;
-  background-image:radial-gradient(ellipse at 20% 20%,rgba(100,60,180,.15) 0%,transparent 50%),
-  radial-gradient(ellipse at 80% 80%,rgba(212,168,67,.08) 0%,transparent 50%);}
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(100,60,180,.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(212,168,67,.08) 0%,transparent 50%);}
 
-/* ===== PARTICLES ===== */
 #particles{position:fixed;inset:0;pointer-events:none;z-index:150;overflow:hidden;}
 .particle{position:absolute;animation:particleFly var(--dur,1.5s) ease-out forwards;}
 @keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0) rotate(360deg)}}
 
 /* ===== REVEAL STAGE ===== */
-#reveal-stage{display:none;position:fixed;inset:0;z-index:200;cursor:pointer;overflow:hidden;}
+#reveal-stage{display:none;position:fixed;inset:0;z-index:200;overflow:hidden;}
 #reveal-stage.show{display:block;}
 #reveal-bg{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .4s;}
 #reveal-stage.show #reveal-bg{opacity:1;}
+
+/* R: 光柱 */
 #light-beam-R{position:absolute;left:50%;top:0;width:4px;height:0;background:linear-gradient(to bottom,transparent,#4a9eff,#fff,#4a9eff,transparent);transform:translateX(-50%);opacity:0;filter:blur(2px);border-radius:4px;}
 #light-beam-R.active{animation:beamDown .6s ease forwards;}
 @keyframes beamDown{0%{height:0;opacity:0}60%{height:100vh;opacity:1}100%{height:100vh;opacity:.4}}
 #light-cross{position:absolute;top:50%;left:0;width:0;height:2px;background:linear-gradient(to right,transparent,#4a9eff,#fff,#4a9eff,transparent);transform:translateY(-50%);opacity:0;}
 #light-cross.active{animation:crossExpand .4s ease .5s forwards;}
 @keyframes crossExpand{0%{width:0;left:50%;opacity:0}100%{width:100%;left:0;opacity:.6}}
+
+/* SR: オーラ＋光柱 */
 #sr-aura{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at center,rgba(192,96,255,.6) 0%,rgba(212,168,67,.3) 40%,transparent 70%);}
 #sr-aura.active{animation:auraGlow 1.2s ease forwards;}
 @keyframes auraGlow{0%{opacity:0}40%{opacity:1}100%{opacity:.5}}
 .sr-beam{position:absolute;top:0;width:2px;height:0;opacity:0;filter:blur(1px);}
 .sr-beam.active{animation:srBeamDown 1s ease forwards;}
 @keyframes srBeamDown{0%{height:0;opacity:0}50%{opacity:1}100%{height:100vh;opacity:.5}}
-#reveal-card-area{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;padding:20px;}
-#reveal-card-area.show-card{animation:cardAppear .5s ease forwards;}
-@keyframes cardAppear{from{opacity:0;transform:scale(.5) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
-#reveal-img{width:min(220px,55vw);border-radius:10px;display:block;}
-#reveal-icon-big{font-size:5rem;display:none;text-align:center;}
-#reveal-rarity-text{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;margin-top:14px;letter-spacing:.25em;text-shadow:0 0 30px currentColor;opacity:0;}
-#reveal-rarity-text.show-text{animation:textAppear .4s ease .3s forwards;}
-#reveal-name-text{font-size:.95rem;margin-top:6px;color:var(--text);opacity:0;}
-#reveal-name-text.show-text{animation:textAppear .4s ease .5s forwards;}
-#reveal-flavor{max-width:min(320px,80vw);margin-top:14px;font-size:.82rem;line-height:1.7;color:rgba(232,223,200,.85);text-align:center;font-style:italic;letter-spacing:.03em;opacity:0;border-top:1px solid rgba(255,255,255,.1);padding-top:12px;}
-#reveal-flavor.show-flavor-N{animation:textAppear .5s ease .4s forwards;}
-#reveal-flavor.show-flavor-HN{animation:textAppear .5s ease .5s forwards;}
-#reveal-flavor.show-flavor-R{animation:textAppear .6s ease .9s forwards;}
-#reveal-flavor.show-flavor-SR{animation:flavorFadeSR 1s ease 1.4s forwards;font-size:.88rem;color:rgba(240,201,106,.9);text-shadow:0 0 20px rgba(192,96,255,.4);}
-@keyframes flavorFadeSR{0%{opacity:0;transform:translateY(8px);letter-spacing:.08em}100%{opacity:1;transform:none;letter-spacing:.05em}}
-#reveal-tap-hint{font-size:.68rem;color:rgba(255,255,255,.28);margin-top:20px;letter-spacing:.12em;opacity:0;}
-#reveal-tap-hint.show-text{animation:textAppear .4s ease .7s forwards;}
-#reveal-tap-hint.show-text-sr{animation:textAppear .4s ease 1.8s forwards;}
-@keyframes textAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* ===== HEADER ===== */
-header{
-  text-align:center;
-  padding:28px 16px 0;
-  border-bottom:1px solid rgba(212,168,67,.2);
+/* ===== カードフリップ ===== */
+#reveal-card-area{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+
+/* フリップ本体 */
+#flip-wrapper{
+  width:min(220px,55vw);
+  /* カード比率 5:7 */
+  aspect-ratio:5/7;
+  perspective:900px;
+  cursor:pointer;
+  flex-shrink:0;
+}
+#flip-inner{
+  width:100%;height:100%;
   position:relative;
+  transform-style:preserve-3d;
+  transition:transform .65s cubic-bezier(.4,0,.2,1);
+}
+#flip-inner.flipped{
+  transform:rotateY(180deg);
+}
+/* フリップ完了後に若干弾む */
+#flip-inner.flipped-bounce{
+  animation:flipBounce .65s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes flipBounce{
+  0%{transform:rotateY(0deg) scale(1)}
+  40%{transform:rotateY(100deg) scale(.92)}
+  70%{transform:rotateY(175deg) scale(1.04)}
+  85%{transform:rotateY(178deg) scale(.98)}
+  100%{transform:rotateY(180deg) scale(1)}
+}
+
+.flip-face{
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:10px;
   overflow:hidden;
 }
-
-/* スプライトエリア */
-.sprite-area{
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  gap:clamp(40px,10vw,120px);
-  height:80px;
-  margin-bottom:10px;
-  position:relative;
+#flip-back-face{
+  /* 表(初期状態): カード裏面 */
+  box-shadow:0 4px 24px rgba(0,0,0,.6);
 }
-.sprite-wrap{
-  position:relative;
-  width:64px;
-  height:80px;
-  image-rendering:pixelated;
-  image-rendering:crisp-edges;
+#flip-back-face img{
+  width:100%;height:100%;object-fit:cover;display:block;
 }
-.sprite-wrap img{
-  width:64px;
-  height:auto;
-  image-rendering:pixelated;
-  image-rendering:crisp-edges;
-  display:block;
-  position:absolute;
-  bottom:0;
-  left:0;
-  opacity:0;
-  transition:none;
+#flip-front-face{
+  /* 裏(フリップ後): カード表面 */
+  transform:rotateY(180deg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
-.sprite-wrap img.active{opacity:1;}
-/* メルの白背景を消す */
-#mel-sprite img{mix-blend-mode:multiply;}
+#reveal-img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+#reveal-icon-big{
+  font-size:4rem;display:none;text-align:center;
+}
 
-/* シャルは左、メルは右からの視点 */
-#shal-sprite{transform:scaleX(1);}
-#mel-sprite{transform:scaleX(-1);}
+/* カード裏面の初期スライドイン */
+@keyframes backFaceIn{
+  from{opacity:0;transform:scale(.85) translateY(20px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+#flip-wrapper.intro-in{
+  animation:backFaceIn .45s cubic-bezier(.2,.8,.3,1) forwards;
+}
 
-.sprite-name{
-  font-size:.6rem;
-  color:var(--text-dim);
+/* ===== テキスト類 ===== */
+#reveal-rarity-text{
+  font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;
+  margin-top:14px;letter-spacing:.25em;
+  text-shadow:0 0 30px currentColor;
+  opacity:0;transition:opacity .4s, transform .4s;
+  transform:translateY(10px);
+}
+#reveal-rarity-text.show-text{opacity:1;transform:translateY(0);}
+
+#reveal-name-text{
+  font-size:.95rem;margin-top:6px;color:var(--text);
+  opacity:0;transition:opacity .4s .15s, transform .4s .15s;
+  transform:translateY(8px);
+}
+#reveal-name-text.show-text{opacity:1;transform:translateY(0);}
+
+/* フレーバーテキスト（タイプライター用・CSS animation不使用） */
+#reveal-flavor{
+  max-width:min(320px,80vw);
+  margin-top:14px;
+  font-size:.82rem;
+  line-height:1.7;
+  color:rgba(232,223,200,.85);
   text-align:center;
-  letter-spacing:.08em;
-  margin-top:2px;
-  position:absolute;
-  bottom:-16px;
-  left:50%;
-  transform:translateX(-50%);
-  white-space:nowrap;
+  font-style:italic;
+  letter-spacing:.03em;
+  opacity:0;
+  border-top:1px solid rgba(255,255,255,.1);
+  padding-top:12px;
+  transition:opacity .3s;
+  min-height:1.4em; /* タイプ中に高さが跳ねないように */
 }
 
-/* タイトル */
-.header-title-block{padding:4px 0 18px;}
-header h1{
-  font-family:'Cinzel',serif;
-  font-size:clamp(1.1rem,4vw,2rem);
-  color:var(--gold);
-  letter-spacing:.12em;
-  text-shadow:0 0 30px rgba(212,168,67,.4);
-  line-height:1.3;
-}
-.header-subtitle{
-  font-family:'Cinzel',serif;
-  font-size:clamp(.65rem,2vw,.85rem);
-  color:var(--gold-dark);
-  letter-spacing:.2em;
-  margin-top:4px;
-}
-header p.header-desc{color:var(--text-dim);font-size:.8rem;margin-top:4px;}
-
-/* ===== RPG MESSAGE WINDOW ===== */
-#rpg-window{
-  max-width:700px;
-  margin:14px auto 0;
-  padding:0 16px 14px;
-}
-.rpg-box{
-  background:rgba(8,6,20,.88);
-  border:2px solid rgba(212,168,67,.35);
-  border-radius:6px;
-  padding:12px 16px 10px;
-  position:relative;
-  box-shadow:0 0 20px rgba(212,168,67,.08), inset 0 0 30px rgba(0,0,0,.4);
-  min-height:60px;
-  cursor:pointer;
-  user-select:none;
-}
-.rpg-box::before{
-  content:'';
-  position:absolute;
-  inset:3px;
-  border:1px solid rgba(212,168,67,.12);
-  border-radius:3px;
-  pointer-events:none;
-}
-/* 角飾り */
-.rpg-box::after{
-  content:'◆';
-  position:absolute;
-  bottom:8px;
-  right:12px;
-  font-size:.55rem;
-  color:var(--gold);
-  opacity:.5;
-  animation:blink 1.2s ease-in-out infinite;
-}
-@keyframes blink{0%,100%{opacity:.3}50%{opacity:.8}}
-.rpg-speaker{
-  font-family:'Cinzel',serif;
-  font-size:.68rem;
-  color:var(--gold);
-  letter-spacing:.12em;
-  margin-bottom:6px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-.rpg-speaker::before{content:'▶';font-size:.5rem;color:var(--gold-dark);}
-.rpg-text{
-  font-size:clamp(.8rem,.9rem,1rem);
-  line-height:1.75;
-  color:var(--text);
-  letter-spacing:.04em;
-  min-height:1.75em;
-}
-.rpg-cursor{
+/* タイプライターカーソル */
+.tw-cursor{
   display:inline-block;
-  width:2px;
-  height:.9em;
-  background:var(--gold);
-  margin-left:2px;
-  vertical-align:middle;
-  animation:cursorBlink .7s step-end infinite;
+  width:1px;height:.9em;
+  background:currentColor;
+  margin-left:1px;
+  vertical-align:text-bottom;
+  animation:cursorBlink .55s step-end infinite;
 }
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* ===== RARE HISTORY ===== */
-#rare-history-wrap{max-width:900px;margin:12px auto 0;padding:0 16px;}
-#rare-history-label{font-size:.7rem;color:var(--gold-dark);letter-spacing:.1em;margin-bottom:5px;font-family:'Cinzel',serif;}
-#rare-history{display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;min-height:32px;scrollbar-width:thin;scrollbar-color:var(--gold-dark) transparent;}
-.hist-chip{flex-shrink:0;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;border:1px solid currentColor;white-space:nowrap;}
-
-/* ===== MAIN ===== */
-main{max-width:900px;margin:0 auto;padding:20px 16px 80px;}
-
-/* ボタン - モバイル最適化 */
-.gacha-buttons{display:flex;gap:14px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
-.btn-gacha{
-  font-family:'Cinzel',serif;
-  font-size:clamp(.9rem,3vw,1rem);
-  letter-spacing:.1em;
-  padding:clamp(14px,4vw,16px) clamp(28px,8vw,40px);
-  border:2px solid var(--gold);
-  background:linear-gradient(135deg,rgba(212,168,67,.15),rgba(212,168,67,.05));
-  color:var(--gold-light);
-  cursor:pointer;
-  border-radius:4px;
-  position:relative;
-  overflow:hidden;
-  transition:all .25s ease;
-  min-width:160px;
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
+#reveal-tap-hint{
+  font-size:.68rem;color:rgba(255,255,255,.28);
+  margin-top:20px;letter-spacing:.12em;
+  opacity:0;transition:opacity .5s;
 }
-.btn-gacha::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,67,.3),transparent);opacity:0;transition:opacity .25s;}
-.btn-gacha:hover::before,.btn-gacha:active::before{opacity:1;}
-.btn-gacha:hover{box-shadow:0 0 24px rgba(212,168,67,.35);transform:translateY(-1px);}
-.btn-gacha:active{transform:translateY(1px);}
-.btn-gacha:disabled{opacity:.4;cursor:not-allowed;transform:none;}
 
-/* カードグリッド */
-#result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
+/* ===== スキップボタン ===== */
+#skip-btn{
+  position:absolute;
+  bottom:28px;right:24px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.22);
+  color:rgba(255,255,255,.6);
+  font-size:.68rem;font-family:'Cinzel',serif;
+  letter-spacing:.14em;
+  padding:8px 20px;border-radius:20px;
+  cursor:pointer;
+  display:none;
+  transition:background .2s, color .2s;
+  z-index:10;
+}
+#skip-btn:hover{background:rgba(255,255,255,.18);color:#fff;}
+
+@keyframes textAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ===== HEADER ===== */
+header{text-align:center;padding:40px 20px 20px;border-bottom:1px solid rgba(212,168,67,.2);}
+header h1{font-family:'Cinzel',serif;font-size:clamp(1.4rem,4vw,2.2rem);color:var(--gold);letter-spacing:.15em;text-shadow:0 0 30px rgba(212,168,67,.4);}
+header p{color:var(--text-dim);font-size:.85rem;margin-top:6px;}
+#rare-history-wrap{max-width:900px;margin:20px auto 0;padding:0 16px;}
+#rare-history-label{font-size:.72rem;color:var(--gold-dark);letter-spacing:.1em;margin-bottom:6px;font-family:'Cinzel',serif;}
+#rare-history{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;min-height:36px;scrollbar-width:thin;scrollbar-color:var(--gold-dark) transparent;}
+.hist-chip{flex-shrink:0;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;border:1px solid currentColor;white-space:nowrap;}
+main{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
+.gacha-buttons{display:flex;gap:16px;justify-content:center;margin-bottom:32px;flex-wrap:wrap;}
+.btn-gacha{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.12em;padding:14px 36px;border:2px solid var(--gold);background:linear-gradient(135deg,rgba(212,168,67,.15),rgba(212,168,67,.05));color:var(--gold-light);cursor:pointer;border-radius:4px;position:relative;overflow:hidden;transition:all .25s ease;}
+.btn-gacha::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,67,.3),transparent);opacity:0;transition:opacity .25s;}
+.btn-gacha:hover::before{opacity:1;}
+.btn-gacha:hover{box-shadow:0 0 24px rgba(212,168,67,.35);transform:translateY(-1px);}
+.btn-gacha:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+#result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
 .card{border-radius:8px;position:relative;background:var(--bg2);border:2px solid rgba(255,255,255,.08);overflow:hidden;transition:transform .2s;opacity:0;}
 .card.visible{animation:cardIn .35s ease forwards;}
 .card:hover{transform:translateY(-4px);}
@@ -256,51 +218,33 @@ main{max-width:900px;margin:0 auto;padding:20px 16px 80px;}
 .card-rarity-tag{font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;}
 .card-name-text{font-weight:700;margin-top:2px;}
 .card-icon{font-size:2.2rem;margin-bottom:8px;}
-
-/* STATS */
-#stats-wrap{margin-top:24px;padding:16px 18px;background:var(--bg2);border:1px solid rgba(212,168,67,.15);border-radius:8px;}
-#stats-title{font-family:'Cinzel',serif;font-size:.76rem;color:var(--gold);letter-spacing:.1em;margin-bottom:10px;}
+#stats-wrap{margin-top:28px;padding:18px 20px;background:var(--bg2);border:1px solid rgba(212,168,67,.15);border-radius:8px;}
+#stats-title{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold);letter-spacing:.1em;margin-bottom:12px;}
 .stat-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
 .stat-label{width:36px;text-align:right;font-family:'Cinzel',serif;font-size:.68rem;}
 .stat-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
 .stat-bar{height:100%;border-radius:3px;transition:width .5s ease;}
 .stat-count{width:40px;text-align:right;color:var(--text-dim);font-size:.75rem;}
-
-/* ボタン群 */
-#rate-toggle{display:block;margin:18px auto 0;background:none;border:1px solid rgba(212,168,67,.25);color:var(--text-dim);font-size:.75rem;padding:8px 22px;border-radius:4px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .2s;touch-action:manipulation;}
+#rate-toggle{display:block;margin:20px auto 0;background:none;border:1px solid rgba(212,168,67,.25);color:var(--text-dim);font-size:.75rem;padding:7px 20px;border-radius:4px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .2s;}
 #rate-toggle:hover{border-color:var(--gold);color:var(--gold);}
-#rate-table{display:none;margin-top:14px;}
+#rate-table{display:none;margin-top:16px;}
 #rate-table.show{display:block;}
 table{width:100%;border-collapse:collapse;font-size:.78rem;}
 th,td{padding:7px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);}
 th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
-#btn-reset{display:block;margin:14px auto 0;background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-dim);font-size:.72rem;padding:8px 20px;border-radius:4px;cursor:pointer;transition:all .2s;touch-action:manipulation;}
+#btn-reset{display:block;margin:16px auto 0;background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-dim);font-size:.72rem;padding:6px 18px;border-radius:4px;cursor:pointer;transition:all .2s;}
 #btn-reset:hover{border-color:rgba(255,80,80,.4);color:#ff8080;}
-
-/* カラー */
 .c-N{color:var(--N)}.c-HN{color:var(--HN)}.c-R{color:var(--R)}.c-SR{color:var(--SR)}
 .bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}
-
-/* モバイル最適化 */
-@media(max-width:480px){
-  #result-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
-  .btn-gacha{min-width:140px;padding:14px 20px;}
-  .rpg-text{font-size:.82rem;}
-  .sprite-area{gap:30px;height:72px;}
-  .sprite-wrap,.sprite-wrap img{width:56px;}
-}
-@media(max-width:360px){
-  #result-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
-  .sprite-area{gap:20px;}
-  header h1{font-size:1rem;}
-}
+@media(max-width:500px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px}}
 </style>
 </head>
 <body>
 <div id="particles"></div>
 
-<!-- REVEAL STAGE -->
-<div id="reveal-stage" onclick="resolveReveal()">
+<!-- ====== REVEAL STAGE ====== -->
+<!-- クリックはJS側でハンドリング（スキップ vs 次へを振り分けるため） -->
+<div id="reveal-stage">
   <div id="reveal-bg"></div>
   <div id="light-beam-R"></div>
   <div id="light-cross"></div>
@@ -309,62 +253,42 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
   <div class="sr-beam" id="srb2" style="left:35%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
   <div class="sr-beam" id="srb3" style="left:65%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
   <div class="sr-beam" id="srb4" style="left:85%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
+
   <div id="reveal-card-area">
-    <img id="reveal-img" src="" alt="">
-    <div id="reveal-icon-big"></div>
+    <!-- カードフリップ構造 -->
+    <div id="flip-wrapper">
+      <div id="flip-inner">
+        <!-- 裏面（初期表示） -->
+        <!-- 注: 2707.png を index.html と同じフォルダに置いてください -->
+        <div class="flip-face" id="flip-back-face">
+          <img src="2707.png" alt="card back">
+        </div>
+        <!-- 表面（フリップ後） -->
+        <div class="flip-face" id="flip-front-face">
+          <img id="reveal-img" src="" alt="">
+          <div id="reveal-icon-big"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="reveal-rarity-text"></div>
     <div id="reveal-name-text"></div>
     <div id="reveal-flavor"></div>
     <div id="reveal-tap-hint">— タップして次へ —</div>
   </div>
+
+  <!-- スキップボタン（タイプライター中のみ表示） -->
+  <button id="skip-btn">SKIP ▶</button>
 </div>
 
-<!-- HEADER -->
 <header>
-  <!-- スプライトアニメ -->
-  <div class="sprite-area">
-    <div class="sprite-wrap" id="shal-sprite">
-      <!-- shal_walk_1〜5.png を sprites/ フォルダに配置 -->
-      <img src="sprites/shal_walk_1.png" alt="シャル" class="active" data-frame="0">
-      <img src="sprites/shal_walk_2.png" alt="" data-frame="1">
-      <img src="sprites/shal_walk_3.png" alt="" data-frame="2">
-      <img src="sprites/shal_walk_4.png" alt="" data-frame="3">
-      <img src="sprites/shal_walk_5.png" alt="" data-frame="4">
-      <span class="sprite-name">Shal</span>
-    </div>
-    <div class="sprite-wrap" id="mel-sprite">
-      <!-- mel_walk_1〜5.png を sprites/ フォルダに配置 -->
-      <img src="sprites/mel_walk_1.png" alt="メル" class="active" data-frame="0">
-      <img src="sprites/mel_walk_2.png" alt="" data-frame="1">
-      <img src="sprites/mel_walk_3.png" alt="" data-frame="2">
-      <img src="sprites/mel_walk_4.png" alt="" data-frame="3">
-      <img src="sprites/mel_walk_5.png" alt="" data-frame="4">
-      <span class="sprite-name">Mel</span>
-    </div>
-  </div>
-
-  <!-- タイトル -->
-  <div class="header-title-block">
-    <h1>双聖の旅路</h1>
-    <div class="header-subtitle">— Threads of Fate —</div>
-    <p class="header-desc">シャル &amp; メルのカードを集めよう — Demo Ver.</p>
-  </div>
+  <h1>✦ OTI-FANTASY GACHA ✦</h1>
+  <p>シャル &amp; メルのカードを集めよう — Demo Ver.</p>
 </header>
-
-<!-- RPG MESSAGE WINDOW -->
-<div id="rpg-window">
-  <div class="rpg-box" id="rpg-box" onclick="skipTypewriter()">
-    <div class="rpg-speaker" id="rpg-speaker">シャル</div>
-    <div class="rpg-text" id="rpg-text"><span id="rpg-text-inner"></span><span class="rpg-cursor" id="rpg-cursor"></span></div>
-  </div>
-</div>
-
-<!-- RARE HISTORY -->
 <div id="rare-history-wrap">
   <div id="rare-history-label">RARE HISTORY — R以上の排出履歴</div>
   <div id="rare-history"></div>
 </div>
-
 <main>
   <div class="gacha-buttons">
     <button class="btn-gacha" id="btn1" onclick="doGacha(1)">✦ 単発ガチャ</button>
@@ -390,18 +314,20 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 </main>
 
 <script>
-/* ==============================
-   カードデータ
-============================== */
-const IMG = 'shal-knight/';
-const ICONS = {N:'🌸',HN:'🌺',R:'💎',SR:'⭐'};
-const RARE_RARITIES = new Set(['R','SR']);
-let stats = {N:0,HN:0,R:0,SR:0,total:0};
-let history = [];
-let audioCtx = null;
-let revealResolve = null;
+const IMG='shal-knight/';
+const ICONS={N:'🌸',HN:'🌺',R:'💎',SR:'⭐'};
+const RARE_RARITIES=new Set(['R','SR']);
+let stats={N:0,HN:0,R:0,SR:0,total:0};
+let history=[];
+let audioCtx=null;
+let revealResolve=null;
 
-const CARDS = [
+// ── タイプライター状態管理 ──────────────────────────────
+let currentRevealCard=null;
+let twTimers=[];        // setTimeout/setInterval のID群
+let twRunning=false;    // タイプライター進行中フラグ
+
+const CARDS=[
   {id:'N_001',name:'見張り番のひと休み',rarity:'N',file:'00001_N.png',flavor:'この槍、重いんだよね。…でも、これがあれば誰かを守れる気がするから。'},
   {id:'N_002',name:'朝のひととき',rarity:'N',file:'00002_N.png',flavor:'村の朝は早いけど、温かいお茶があるなら…今日も、ちゃんとやれそう。'},
   {id:'N_003',name:'麦畑の番人',rarity:'N',file:'00003_N.png',flavor:'荒らすなら、止めるだけ。…それだけだよ。'},
@@ -489,147 +415,18 @@ const CARDS = [
   {id:'SR_085',name:'聖焔の白翼姫',rarity:'SR',file:'00085_SR.png',flavor:'まだ、光は消えてない。'},
 ];
 
-const RATES = [
+const RATES=[
   {rarity:'SR',rate:.018},{rarity:'R',rate:.07},{rarity:'HN',rate:.32},{rarity:'N',rate:.592}
 ];
 
-/* ==============================
-   RPG メッセージシステム
-============================== */
-const RPG_MESSAGES = {
-  idle: [
-    {speaker:'シャル', text:'ここから旅が始まるんだね。…どんなカードが出るかな。'},
-    {speaker:'メル',   text:'やってみなきゃわからないよ！さあ、引こう！'},
-    {speaker:'シャル', text:'運命の糸は、引いた者だけが掴める。'},
-    {speaker:'メル',   text:'強いカードを引いてみせる！絶対に！'},
-    {speaker:'シャル', text:'…一枚だけ、引いてみよう。'},
-    {speaker:'メル',   text:'次こそSRだよ。絶対そう。根拠はないけど。'},
-    {speaker:'シャル', text:'旅は、小さな出会いの積み重ねだって…誰かが言ってた。'},
-    {speaker:'メル',   text:'ねえシャル、一緒に引かない？…引くのはアナタだけど。'},
-  ],
-  afterN: [
-    {speaker:'シャル', text:'…うん。次に期待しよう。'},
-    {speaker:'メル',   text:'大丈夫！次があるよ！'},
-    {speaker:'シャル', text:'旅の始まりはいつも、平凡なところから。'},
-  ],
-  afterHN: [
-    {speaker:'メル',   text:'おっ、いいじゃない！'},
-    {speaker:'シャル', text:'悪くない引きだったね。'},
-    {speaker:'メル',   text:'これはこれで、なかなかよいと思う。'},
-  ],
-  afterR: [
-    {speaker:'シャル', text:'……！これは、いいカードだね。'},
-    {speaker:'メル',   text:'やったあ！Rだよシャル！'},
-    {speaker:'シャル', text:'光に導かれた一枚。…大切にしよう。'},
-  ],
-  afterSR: [
-    {speaker:'メル',   text:'すごい…！シャル、見て！これ、めちゃくちゃ強そう！'},
-    {speaker:'シャル', text:'……運命の一枚、か。これが「双聖の旅路」の答えかもしれない。'},
-    {speaker:'メル',   text:'SR！SR出たよ！信じてたもん！ずっと信じてたもん！'},
-  ],
-  afterReset: [
-    {speaker:'シャル', text:'また一から、か。…旅は続く。'},
-    {speaker:'メル',   text:'リセット！気持ちも新たにいくよ！'},
-  ],
-};
+// ── Audio ──────────────────────────────────────────────
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
 
-let typewriterTimer = null;
-let currentFullText = '';
-let typewriterDone = false;
+function playN(){try{const ctx=getAudio(),t=ctx.currentTime;const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.setValueAtTime(330,t);o.frequency.exponentialRampToValueAtTime(495,t+.1);g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.2);}catch(e){}}
+function playHN(){try{const ctx=getAudio(),t=ctx.currentTime;[330,440,550].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(0,t+i*.04);g.gain.linearRampToValueAtTime(.1,t+i*.04+.03);g.gain.exponentialRampToValueAtTime(.001,t+i*.04+.25);o.start(t+i*.04);o.stop(t+i*.04+.25);});}catch(e){}}
 
-function showRpgMessage(category) {
-  const pool = RPG_MESSAGES[category] || RPG_MESSAGES.idle;
-  const msg = pool[Math.floor(Math.random() * pool.length)];
-  typewriterPlay(msg.speaker, msg.text);
-}
-
-function typewriterPlay(speaker, text) {
-  if (typewriterTimer) clearInterval(typewriterTimer);
-  currentFullText = text;
-  typewriterDone = false;
-  document.getElementById('rpg-speaker').textContent = speaker;
-  const inner = document.getElementById('rpg-text-inner');
-  const cursor = document.getElementById('rpg-cursor');
-  inner.textContent = '';
-  cursor.style.display = 'inline-block';
-  let i = 0;
-  typewriterTimer = setInterval(() => {
-    if (i < text.length) {
-      inner.textContent = text.slice(0, ++i);
-    } else {
-      clearInterval(typewriterTimer);
-      typewriterTimer = null;
-      typewriterDone = true;
-      cursor.style.display = 'none';
-    }
-  }, 50);
-}
-
-function skipTypewriter() {
-  if (typewriterTimer) {
-    clearInterval(typewriterTimer);
-    typewriterTimer = null;
-    document.getElementById('rpg-text-inner').textContent = currentFullText;
-    document.getElementById('rpg-cursor').style.display = 'none';
-    typewriterDone = true;
-  } else if (typewriterDone) {
-    // 次のメッセージへ
-    showRpgMessage('idle');
-  }
-}
-
-/* ==============================
-   スプライトアニメ
-============================== */
-function initSprites() {
-  ['shal-sprite', 'mel-sprite'].forEach(id => {
-    const wrap = document.getElementById(id);
-    const imgs = wrap.querySelectorAll('img');
-    let frame = 0;
-    let allLoaded = true;
-
-    // 画像が存在しない場合はフォールバック（非表示）
-    imgs[0].onerror = () => { wrap.style.display = 'none'; };
-
-    setInterval(() => {
-      imgs[frame].classList.remove('active');
-      frame = (frame + 1) % imgs.length;
-      imgs[frame].classList.add('active');
-    }, 150);
-  });
-}
-
-/* ==============================
-   Audio
-============================== */
-function getAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-function playN() {
-  try {
-    const ctx=getAudio(),t=ctx.currentTime;
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.frequency.setValueAtTime(330,t);o.frequency.exponentialRampToValueAtTime(495,t+.1);
-    g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
-    o.start(t);o.stop(t+.2);
-  } catch(e) {}
-}
-function playHN() {
-  try {
-    const ctx=getAudio(),t=ctx.currentTime;
-    [330,440,550].forEach((f,i)=>{
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);o.frequency.value=f;
-      g.gain.setValueAtTime(0,t+i*.04);g.gain.linearRampToValueAtTime(.1,t+i*.04+.03);
-      g.gain.exponentialRampToValueAtTime(.001,t+i*.04+.25);
-      o.start(t+i*.04);o.stop(t+i*.04+.25);
-    });
-  } catch(e) {}
-}
-function playR() {
-  try {
+function playR(){
+  try{
     const ctx=getAudio(),t=ctx.currentTime;
     const bass=ctx.createOscillator(),bg=ctx.createGain();
     bass.connect(bg);bg.connect(ctx.destination);bass.type='sine';bass.frequency.value=110;
@@ -642,10 +439,11 @@ function playR() {
       g.gain.exponentialRampToValueAtTime(.001,t+.3+i*.1+.6);
       o.start(t+.3+i*.1);o.stop(t+.3+i*.1+.6);
     });
-  } catch(e) {}
+  }catch(e){}
 }
-function playSR() {
-  try {
+
+function playSR(){
+  try{
     const ctx=getAudio(),t=ctx.currentTime;
     [1,2,3].forEach(i=>{
       const o=ctx.createOscillator(),g=ctx.createGain();
@@ -666,251 +464,344 @@ function playSR() {
         o.start(t+timing[i]);o.stop(t+timing[i]+.6);
       });
     });
-  } catch(e) {}
+  }catch(e){}
 }
 
-/* ==============================
-   パーティクル
-============================== */
-function spawnParticles(color, count) {
-  const container = document.getElementById('particles');
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 12 + 4;
-    const tx = (Math.random() - .5) * window.innerWidth * .9;
-    const ty = -(Math.random() * window.innerHeight * .85 + 60);
-    const dur = Math.random() * 1 + .8;
-    const isSquare = Math.random() > .5;
-    p.style.cssText = `width:${size}px;height:${size}px;background:${color};border-radius:${isSquare?'2px':'50%'};left:${20+Math.random()*60}%;top:55%;--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;`;
+// ── Particles ─────────────────────────────────────────
+function spawnParticles(color,count){
+  const container=document.getElementById('particles');
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');p.className='particle';
+    const size=Math.random()*12+4;
+    const tx=(Math.random()-.5)*window.innerWidth*.9;
+    const ty=-(Math.random()*window.innerHeight*.85+60);
+    const dur=Math.random()*1+.8;
+    const isSquare=Math.random()>.5;
+    p.style.cssText=`width:${size}px;height:${size}px;background:${color};border-radius:${isSquare?'2px':'50%'};left:${20+Math.random()*60}%;top:55%;--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;`;
     container.appendChild(p);
-    setTimeout(() => p.remove(), (dur + .2) * 1000);
+    setTimeout(()=>p.remove(),(dur+.2)*1000);
   }
 }
 
-/* ==============================
-   リビール演出
-============================== */
-function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+// ── Utilities ─────────────────────────────────────────
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 
-function resetStage() {
-  document.getElementById('light-beam-R').className = '';
-  document.getElementById('light-cross').className = '';
-  document.getElementById('sr-aura').className = '';
-  ['srb1','srb2','srb3','srb4'].forEach(id => {
-    document.getElementById(id).className = 'sr-beam';
-  });
-  const area = document.getElementById('reveal-card-area');
-  area.className = ''; area.style.opacity = '0';
-  document.getElementById('reveal-rarity-text').className = '';
-  document.getElementById('reveal-name-text').className = '';
-  document.getElementById('reveal-flavor').className = '';
-  document.getElementById('reveal-flavor').textContent = '';
-  document.getElementById('reveal-tap-hint').className = '';
+// ── Typewriter ────────────────────────────────────────
+/**
+ * フレーバーテキストをタイプライター表示する
+ * @param {string} text  表示テキスト
+ * @param {number} startDelay  開始までの遅延(ms)
+ * @param {string} color  CSSカラー文字列
+ * @param {string} [extraStyle]  追加スタイル（SR用のtext-shadowなど）
+ */
+function typewriterFlavor(text, startDelay, color, extraStyle=''){
+  const el=document.getElementById('reveal-flavor');
+  el.textContent='';
+  el.style.opacity='0';
+  el.style.color=color;
+  el.style.cssText += extraStyle;
+  el.style.borderTopColor='rgba(255,255,255,.1)';
+
+  twRunning=true;
+  document.getElementById('skip-btn').style.display='block';
+
+  // 開始遅延タイマー
+  const t1=setTimeout(()=>{
+    el.style.opacity='1';
+    let i=0;
+    // カーソルをHTMLで挿入（textContent→innerHTML切り替え）
+    const iid=setInterval(()=>{
+      if(i<text.length){
+        el.innerHTML=text.slice(0,i+1)+'<span class="tw-cursor"> </span>';
+        i++;
+      }else{
+        clearInterval(iid);
+        el.textContent=text; // カーソル除去・完全表示
+        twRunning=false;
+        twTimers=[];
+        document.getElementById('skip-btn').style.display='none';
+        // 「次へ」ヒント表示
+        const hint=document.getElementById('reveal-tap-hint');
+        hint.style.opacity='1';
+      }
+    },55); // 55ms/文字 ≒ 自然な発話ペース
+    twTimers.push(iid);
+  },startDelay);
+  twTimers.push(t1);
 }
 
-function setRevealCard(card) {
-  const img = document.getElementById('reveal-img');
-  const icon = document.getElementById('reveal-icon-big');
-  if (card.file) {
-    img.src = IMG + card.file;
-    img.style.display = 'block';
-    icon.style.display = 'none';
-  } else {
-    img.style.display = 'none';
-    icon.textContent = ICONS[card.rarity] || '🃏';
-    icon.style.display = 'block';
+/** スキップ：タイプライターを止めて全文即表示 */
+function skipTypewriter(){
+  twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});
+  twTimers=[];
+  twRunning=false;
+  const card=currentRevealCard;
+  if(card){
+    const el=document.getElementById('reveal-flavor');
+    el.textContent=card.flavor||'';
+    el.style.opacity='1';
   }
-  document.getElementById('reveal-name-text').textContent = card.name;
-  document.getElementById('reveal-flavor').textContent = card.flavor || '';
+  document.getElementById('skip-btn').style.display='none';
+  document.getElementById('reveal-tap-hint').style.opacity='1';
 }
 
-async function showRevealNHN(card) {
-  return new Promise(async resolve => {
-    revealResolve = resolve;
+/** ステージ全体クリックハンドラ */
+function handleStageClick(e){
+  // スキップボタン自体のクリックは別処理
+  if(e.target===document.getElementById('skip-btn'))return;
+  if(twRunning){
+    skipTypewriter();
+  }else{
+    resolveReveal();
+  }
+}
+
+// ── Stage Management ──────────────────────────────────
+function resetStage(){
+  // タイプライターキャンセル
+  twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});
+  twTimers=[];twRunning=false;
+
+  document.getElementById('light-beam-R').className='';
+  document.getElementById('light-cross').className='';
+  document.getElementById('sr-aura').className='';
+  ['srb1','srb2','srb3','srb4'].forEach(id=>{document.getElementById(id).className='sr-beam';});
+
+  // フリップをトランジションなしでリセット
+  const inner=document.getElementById('flip-inner');
+  inner.style.transition='none';
+  inner.classList.remove('flipped','flipped-bounce');
+  void inner.offsetWidth; // reflow
+  inner.style.transition='';
+
+  // フリップラッパーのintroアニメもリセット
+  const wrapper=document.getElementById('flip-wrapper');
+  wrapper.classList.remove('intro-in');
+  void wrapper.offsetWidth;
+
+  // テキスト類リセット
+  const rar=document.getElementById('reveal-rarity-text');
+  rar.className='';rar.style.cssText='';
+  document.getElementById('reveal-name-text').className='';
+  document.getElementById('reveal-name-text').style.cssText='';
+  const fl=document.getElementById('reveal-flavor');
+  fl.style.cssText='';fl.style.opacity='0';fl.textContent='';fl.className='';
+  const hint=document.getElementById('reveal-tap-hint');
+  hint.style.opacity='0';hint.style.transition='opacity .5s';
+  document.getElementById('skip-btn').style.display='none';
+  document.getElementById('reveal-img').style.boxShadow='';
+}
+
+function setRevealCard(card){
+  currentRevealCard=card;
+  const img=document.getElementById('reveal-img');
+  const icon=document.getElementById('reveal-icon-big');
+  if(card.file){
+    img.src=IMG+card.file;
+    img.style.display='block';
+    icon.style.display='none';
+  }else{
+    img.style.display='none';
+    icon.textContent=ICONS[card.rarity]||'🃏';
+    icon.style.display='block';
+  }
+  document.getElementById('reveal-name-text').textContent=card.name;
+  // フレーバーテキストはここでは設定しない（タイプライターが担当）
+}
+
+/** フリップ実行（アニメーション付き） */
+function flipCard(){
+  const inner=document.getElementById('flip-inner');
+  inner.classList.add('flipped-bounce');
+}
+
+/** カードスライドイン（裏面表示） */
+function showCardBack(){
+  const wrapper=document.getElementById('flip-wrapper');
+  void wrapper.offsetWidth;
+  wrapper.classList.add('intro-in');
+}
+
+// ── Reveal Functions ──────────────────────────────────
+async function showRevealNHN(card){
+  return new Promise(async resolve=>{
+    revealResolve=resolve;
     resetStage();
     document.getElementById('reveal-stage').classList.add('show');
     setRevealCard(card);
-    document.getElementById('reveal-img').style.boxShadow = 'none';
-    const rar = document.getElementById('reveal-rarity-text');
-    rar.textContent = card.rarity;
-    rar.style.color = card.rarity === 'HN' ? 'var(--HN)' : 'var(--N)';
-    const fl = document.getElementById('reveal-flavor');
-    fl.style.color = 'rgba(232,223,200,.7)';
-    await wait(100);
-    document.getElementById('reveal-card-area').classList.add('show-card');
+
+    const rar=document.getElementById('reveal-rarity-text');
+    rar.textContent=card.rarity;
+    rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';
+
+    // 裏面スライドイン
+    await wait(50);
+    showCardBack();
+    // 裏面を少し見せてからフリップ
+    await wait(600);
+    flipCard();
+    // フリップ完了後にテキスト表示
+    await wait(750);
     rar.classList.add('show-text');
     document.getElementById('reveal-name-text').classList.add('show-text');
-    fl.classList.add(`show-flavor-${card.rarity}`);
-    document.getElementById('reveal-tap-hint').classList.add('show-text');
+    // タイプライター開始（少し間を置く）
+    typewriterFlavor(
+      card.flavor||'',
+      600,
+      card.rarity==='HN'?'rgba(200,215,225,.85)':'rgba(232,223,200,.7)'
+    );
   });
 }
 
-async function showRevealR(card) {
-  return new Promise(async resolve => {
-    revealResolve = resolve;
+async function showRevealR(card){
+  return new Promise(async resolve=>{
+    revealResolve=resolve;
     resetStage();
     document.getElementById('reveal-stage').classList.add('show');
     setRevealCard(card);
-    document.getElementById('reveal-img').style.boxShadow = '0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';
-    const rar = document.getElementById('reveal-rarity-text');
-    rar.textContent = 'R A R E'; rar.style.color = 'var(--R)';
-    const fl = document.getElementById('reveal-flavor');
-    fl.style.color = 'rgba(180,210,255,.85)';
-    await wait(300);
+    document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';
+
+    const rar=document.getElementById('reveal-rarity-text');
+    rar.textContent='R A R E';rar.style.color='var(--R)';
+
+    // 裏面スライドイン
+    await wait(50);
+    showCardBack();
+    await wait(400);
+    // 光柱演出
     document.getElementById('light-beam-R').classList.add('active');
     await wait(500);
     document.getElementById('light-cross').classList.add('active');
-    await wait(300);
-    document.getElementById('reveal-card-area').classList.add('show-card');
-    await wait(100);
+    // 演出ピークでフリップ
+    await wait(200);
+    flipCard();
+    await wait(750);
     rar.classList.add('show-text');
     document.getElementById('reveal-name-text').classList.add('show-text');
-    fl.classList.add('show-flavor-R');
-    document.getElementById('reveal-tap-hint').classList.add('show-text');
+    // タイプライター
+    typewriterFlavor(card.flavor||'', 700, 'rgba(180,210,255,.85)');
   });
 }
 
-async function showRevealSR(card) {
-  return new Promise(async resolve => {
-    revealResolve = resolve;
+async function showRevealSR(card){
+  return new Promise(async resolve=>{
+    revealResolve=resolve;
     resetStage();
     document.getElementById('reveal-stage').classList.add('show');
     setRevealCard(card);
-    document.getElementById('reveal-img').style.boxShadow = '0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';
-    const rar = document.getElementById('reveal-rarity-text');
-    rar.textContent = 'SUPER RARE'; rar.style.color = 'var(--SR)';
-    const fl = document.getElementById('reveal-flavor');
-    fl.style.color = 'rgba(240,201,106,.9)';
-    await wait(200);
+    document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';
+
+    const rar=document.getElementById('reveal-rarity-text');
+    rar.textContent='SUPER RARE';rar.style.color='var(--SR)';
+
+    // 裏面スライドイン
+    await wait(50);
+    showCardBack();
+    await wait(300);
+    // オーラ・ビーム
     document.getElementById('sr-aura').classList.add('active');
     await wait(300);
-    ['srb1','srb2','srb3','srb4'].forEach((id, i) => {
-      setTimeout(() => document.getElementById(id).classList.add('active'), i * 120);
+    ['srb1','srb2','srb3','srb4'].forEach((id,i)=>{
+      setTimeout(()=>document.getElementById(id).classList.add('active'),i*120);
     });
-    await wait(800);
-    spawnParticles('#c060ff', 15); spawnParticles('#d4a843', 15);
-    document.getElementById('reveal-card-area').classList.add('show-card');
-    await wait(100);
+    await wait(700);
+    spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);
+    // 演出クライマックスでフリップ
+    flipCard();
+    await wait(750);
     rar.classList.add('show-text');
     document.getElementById('reveal-name-text').classList.add('show-text');
-    fl.classList.add('show-flavor-SR');
-    document.getElementById('reveal-tap-hint').classList.add('show-text-sr');
+    // タイプライター（SR専用スタイル）
+    typewriterFlavor(
+      card.flavor||'',
+      900,
+      'rgba(240,201,106,.9)',
+      'text-shadow:0 0 20px rgba(192,96,255,.4);font-size:.88rem;letter-spacing:.05em;'
+    );
   });
 }
 
-function resolveReveal() {
+function resolveReveal(){
+  // タイプライター中なら先にスキップ
+  if(twRunning){skipTypewriter();return;}
   document.getElementById('reveal-stage').classList.remove('show');
-  if (revealResolve) { revealResolve(); revealResolve = null; }
+  if(revealResolve){revealResolve();revealResolve=null;}
 }
 
-/* ==============================
-   ガチャロジック
-============================== */
-function rollRarity() {
-  const r = Math.random(); let a = 0;
-  for (const {rarity, rate} of RATES) { a += rate; if (r < a) return rarity; }
-  return 'N';
-}
-function pickCard(r) {
-  const p = CARDS.filter(c => c.rarity === r);
-  return p[Math.floor(Math.random() * p.length)];
-}
+// ── Gacha Logic ───────────────────────────────────────
+function rollRarity(){const r=Math.random();let a=0;for(const{rarity,rate}of RATES){a+=rate;if(r<a)return rarity;}return 'N';}
+function pickCard(r){const p=CARDS.filter(c=>c.rarity===r);return p[Math.floor(Math.random()*p.length)];}
 
-function addCardToGrid(card) {
-  const g = document.getElementById('result-grid');
-  const el = document.createElement('div');
-  el.className = `card rarity-${card.rarity}`;
-  if (card.file) {
-    el.innerHTML = `<img src="${IMG}${card.file}" alt="${card.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+function addCardToGrid(card){
+  const g=document.getElementById('result-grid');
+  const el=document.createElement('div');
+  el.className=`card rarity-${card.rarity}`;
+  if(card.file){
+    el.innerHTML=`<img src="${IMG}${card.file}" alt="${card.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <div class="card-no-image" style="display:none"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div></div>
       <div class="card-label"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-name-text">${card.name}</div></div>`;
-  } else {
-    el.innerHTML = `<div class="card-no-image"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div><div style="font-size:.75rem;margin-top:6px;font-weight:700">${card.name}</div></div>`;
+  }else{
+    el.innerHTML=`<div class="card-no-image"><div class="card-rarity-tag c-${card.rarity}">${card.rarity}</div><div class="card-icon">${ICONS[card.rarity]||'🃏'}</div><div style="font-size:.75rem;margin-top:6px;font-weight:700">${card.name}</div></div>`;
   }
   g.appendChild(el);
-  setTimeout(() => el.classList.add('visible'), 20);
+  setTimeout(()=>el.classList.add('visible'),20);
 }
 
-async function doGacha(n) {
-  document.getElementById('btn1').disabled = true;
-  document.getElementById('result-grid').innerHTML = '';
-  const results = [];
-  for (let i = 0; i < n; i++) {
-    const r = rollRarity(); const c = pickCard(r); results.push(c);
-    stats[r] = (stats[r] || 0) + 1; stats.total++;
-    if (RARE_RARITIES.has(r)) {
-      const e = history.find(h => h.id === c.id);
-      if (e) e.count++; else history.unshift({...c, count: 1});
-    }
+async function doGacha(n){
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('result-grid').innerHTML='';
+  const results=[];
+  for(let i=0;i<n;i++){
+    const r=rollRarity();const c=pickCard(r);results.push(c);
+    stats[r]=(stats[r]||0)+1;stats.total++;
+    if(RARE_RARITIES.has(r)){const e=history.find(h=>h.id===c.id);if(e)e.count++;else history.unshift({...c,count:1});}
   }
-
-  let lastRarity = 'N';
-  for (const card of results) {
-    lastRarity = card.rarity;
-    if (card.rarity === 'SR') {
-      playSR(); spawnParticles('#c060ff', 20); spawnParticles('#d4a843', 10);
-      await showRevealSR(card);
-    } else if (card.rarity === 'R') {
-      playR(); spawnParticles('#4a9eff', 10);
-      await showRevealR(card);
-    } else if (card.rarity === 'HN') {
-      playHN(); await showRevealNHN(card);
-    } else {
-      playN(); await showRevealNHN(card);
-    }
+  for(const card of results){
+    if(card.rarity==='SR'){playSR();spawnParticles('#c060ff',20);spawnParticles('#d4a843',10);await showRevealSR(card);}
+    else if(card.rarity==='R'){playR();spawnParticles('#4a9eff',10);await showRevealR(card);}
+    else if(card.rarity==='HN'){playHN();await showRevealNHN(card);}
+    else{playN();await showRevealNHN(card);}
     addCardToGrid(card);
   }
-
-  renderStats(); renderHistory();
-  document.getElementById('btn1').disabled = false;
-
-  // 結果に応じたメッセージ
-  const msgMap = {SR:'afterSR', R:'afterR', HN:'afterHN', N:'afterN'};
-  showRpgMessage(msgMap[lastRarity] || 'idle');
+  renderStats();renderHistory();
+  document.getElementById('btn1').disabled=false;
 }
 
-function renderStats() {
-  const w = document.getElementById('stats-rows');
-  const t = stats.total || 1;
-  w.innerHTML = ['SR','R','HN','N'].map(r => {
-    const p = Math.round((stats[r]||0) / t * 100);
+function renderStats(){
+  const w=document.getElementById('stats-rows');const t=stats.total||1;
+  w.innerHTML=['SR','R','HN','N'].map(r=>{
+    const p=Math.round((stats[r]||0)/t*100);
     return `<div class="stat-row"><div class="stat-label c-${r}">${r}</div><div class="stat-bar-wrap"><div class="stat-bar bar-${r}" style="width:${p}%"></div></div><div class="stat-count">${stats[r]||0}</div></div>`;
   }).join('');
-  document.getElementById('total-count').textContent = stats.total;
+  document.getElementById('total-count').textContent=stats.total;
 }
 
-function renderHistory() {
-  const w = document.getElementById('rare-history');
-  if (!history.length) { w.innerHTML = ''; return; }
-  w.innerHTML = history.map(h =>
-    `<span class="hist-chip c-${h.rarity}" style="border-color:var(--${h.rarity})">${h.name}${h.count>1?` ×${h.count}`:''}</span>`
-  ).join('');
+function renderHistory(){
+  const w=document.getElementById('rare-history');
+  if(!history.length){w.innerHTML='';return;}
+  w.innerHTML=history.map(h=>`<span class="hist-chip c-${h.rarity}" style="border-color:var(--${h.rarity})">${h.name}${h.count>1?` ×${h.count}`:''}</span>`).join('');
 }
 
-function toggleRate() {
-  const t = document.getElementById('rate-table');
-  t.classList.toggle('show');
-  document.getElementById('rate-toggle').textContent =
-    t.classList.contains('show') ? '▴ 排出率を閉じる' : '▾ 排出率を確認する';
+function toggleRate(){
+  const t=document.getElementById('rate-table');t.classList.toggle('show');
+  document.getElementById('rate-toggle').textContent=t.classList.contains('show')?'▴ 排出率を閉じる':'▾ 排出率を確認する';
 }
 
-function resetAll() {
-  stats = {N:0,HN:0,R:0,SR:0,total:0};
-  history = [];
-  document.getElementById('result-grid').innerHTML = '';
-  document.getElementById('rare-history').innerHTML = '';
+function resetAll(){
+  stats={N:0,HN:0,R:0,SR:0,total:0};history=[];
+  document.getElementById('result-grid').innerHTML='';
+  document.getElementById('rare-history').innerHTML='';
   renderStats();
-  showRpgMessage('afterReset');
 }
 
-/* ==============================
-   初期化
-============================== */
+// ── イベントリスナー設定 ──────────────────────────────
+document.getElementById('reveal-stage').addEventListener('click', handleStageClick);
+document.getElementById('skip-btn').addEventListener('click', e=>{
+  e.stopPropagation();
+  skipTypewriter();
+});
+
 renderStats();
-initSprites();
-// 少し遅延してから初期メッセージ表示
-setTimeout(() => showRpgMessage('idle'), 300);
 </script>
 </body>
 </html>
