@@ -2,6 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>双聖の旅路 -Threads of Fate-</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
@@ -38,7 +41,7 @@ body{
 .sr-beam{position:absolute;top:0;width:2px;height:0;opacity:0;filter:blur(1px);}
 .sr-beam.active{animation:srBeamDown 1s ease forwards;}
 @keyframes srBeamDown{0%{height:0;opacity:0}50%{opacity:1}100%{height:100vh;opacity:.5}}
-/* reveal-card-area は下のFLIPセクションで再定義 */
+#reveal-card-area{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;padding:20px;}
 #reveal-card-area.show-card{animation:cardAppear .5s ease forwards;}
 @keyframes cardAppear{from{opacity:0;transform:scale(.5) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
 #reveal-img{width:min(220px,55vw);border-radius:10px;display:block;}
@@ -126,48 +129,12 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 .c-N{color:var(--N)}.c-HN{color:var(--HN)}.c-R{color:var(--R)}.c-SR{color:var(--SR)}
 .bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}
 @media(max-width:480px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px;}.btn-gacha{min-width:140px;padding:14px 20px;}}
-
-/* ===== CARD FLIP ===== */
-#reveal-card-area{position:absolute;top:0;left:0;right:0;bottom:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 20px 8px;pointer-events:none;}
-#flip-wrapper{width:min(200px,50vw);aspect-ratio:5/7;perspective:900px;flex-shrink:0;}
-#flip-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;}
-#flip-inner.flipped-bounce{animation:flipBounce .65s cubic-bezier(.4,0,.2,1) forwards;}
-@keyframes flipBounce{
-  0%  {transform:rotateY(0deg)   scale(1)}
-  40% {transform:rotateY(100deg) scale(.92)}
-  70% {transform:rotateY(175deg) scale(1.04)}
-  85% {transform:rotateY(178deg) scale(.98)}
-  100%{transform:rotateY(180deg) scale(1)}
-}
-.flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;}
-#flip-back-face{box-shadow:0 4px 24px rgba(0,0,0,.7);}
-#flip-back-face img{width:100%;height:100%;object-fit:cover;display:block;}
-#flip-front-face{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;}
-#reveal-img{width:100%;height:100%;object-fit:cover;display:block;}
-#reveal-icon-big{font-size:4rem;display:none;text-align:center;}
-@keyframes backFaceIn{from{opacity:0;transform:scale(.82) translateY(22px)}to{opacity:1;transform:none}}
-#flip-wrapper.intro-in{animation:backFaceIn .42s cubic-bezier(.2,.8,.3,1) forwards;}
-#reveal-rarity-text{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;margin-top:10px;letter-spacing:.28em;text-shadow:0 0 30px currentColor;opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s;}
-#reveal-rarity-text.show-text{opacity:1;transform:translateY(0);}
-
-/* ===== IN-REVEAL DQ DIALOG ===== */
-#reveal-dialog{position:absolute;bottom:0;left:0;right:0;padding:0 12px 14px;opacity:0;transform:translateY(12px);transition:opacity .32s,transform .32s;pointer-events:auto;}
-#reveal-dialog.show-dialog{opacity:1;transform:translateY(0);}
-#r-dialog-box{position:relative;background:rgba(5,4,16,.93);border:2px solid rgba(80,110,190,.5);border-radius:5px;padding:14px 18px 13px;min-height:86px;box-shadow:0 0 0 1px rgba(20,40,100,.5),inset 0 1px 0 rgba(100,140,255,.07),0 4px 24px rgba(0,0,0,.5);}
-#r-dialog-box::before,#r-dialog-box::after{content:'◆';position:absolute;font-size:.42rem;color:rgba(80,110,190,.55);line-height:1;}
-#r-dialog-box::before{top:5px;left:6px;}#r-dialog-box::after{bottom:5px;right:6px;}
-#r-dialog-name{position:absolute;top:-14px;left:10px;background:rgba(5,4,16,.96);border:2px solid rgba(80,110,190,.5);border-radius:3px;padding:1px 12px 2px;font-size:.74rem;font-weight:700;color:rgba(195,215,255,.95);letter-spacing:.06em;white-space:nowrap;}
-#r-dialog-text{font-size:.9rem;color:rgba(238,234,255,.97);line-height:1.88;letter-spacing:.04em;min-height:3.3em;font-family:'Noto Sans JP',sans-serif;word-break:break-all;}
-#r-dialog-cursor{display:none;color:rgba(160,200,255,.9);animation:dqBlink .5s step-end infinite;font-size:.78rem;margin-left:1px;vertical-align:middle;}
-@keyframes dqBlink{0%,100%{opacity:1}50%{opacity:0}}
-#r-dialog-hint{text-align:right;margin-top:4px;font-size:.58rem;color:rgba(255,255,255,.18);letter-spacing:.1em;font-family:'Cinzel',serif;opacity:0;transition:opacity .5s 1.2s;}
-#reveal-dialog.show-dialog #r-dialog-hint{opacity:1;}
 </style>
 </head>
 <body>
 <div id="particles"></div>
 
-<div id="reveal-stage">
+<div id="reveal-stage" onclick="resolveReveal()">
   <div id="reveal-bg"></div>
   <div id="light-beam-R"></div>
   <div id="light-cross"></div>
@@ -176,28 +143,13 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
   <div class="sr-beam" id="srb2" style="left:35%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
   <div class="sr-beam" id="srb3" style="left:65%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
   <div class="sr-beam" id="srb4" style="left:85%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
-  <!-- カード上部エリア -->
   <div id="reveal-card-area">
-    <div id="flip-wrapper">
-      <div id="flip-inner">
-        <!-- 裏面: 2707.png を index.html と同フォルダに置く -->
-        <div class="flip-face" id="flip-back-face"><img src="Shal-card-back.png" alt="card back"></div>
-        <!-- 表面 -->
-        <div class="flip-face" id="flip-front-face">
-          <img id="reveal-img" src="" alt="">
-          <div id="reveal-icon-big"></div>
-        </div>
-      </div>
-    </div>
+    <img id="reveal-img" src="" alt="">
+    <div id="reveal-icon-big"></div>
     <div id="reveal-rarity-text"></div>
-  </div>
-  <!-- DQフレーバーダイアログ（下部） -->
-  <div id="reveal-dialog">
-    <div id="r-dialog-box">
-      <div id="r-dialog-name">シャル</div>
-      <div id="r-dialog-text"><span id="r-dialog-cursor">▼</span></div>
-    </div>
-    <div id="r-dialog-hint">TAP TO SKIP &nbsp;/&nbsp; ▼ NEXT</div>
+    <div id="reveal-name-text"></div>
+    <div id="reveal-flavor"></div>
+    <div id="reveal-tap-hint">— タップして次へ —</div>
   </div>
 </div>
 
@@ -413,65 +365,11 @@ function playSR(){try{const ctx=getAudio(),t=ctx.currentTime;[1,2,3].forEach(i=>
 function spawnParticles(color,count){const c=document.getElementById('particles');for(let i=0;i<count;i++){const p=document.createElement('div');p.className='particle';const s=Math.random()*12+4,tx=(Math.random()-.5)*window.innerWidth*.9,ty=-(Math.random()*window.innerHeight*.85+60),dur=Math.random()*1+.8,sq=Math.random()>.5;p.style.cssText=`width:${s}px;height:${s}px;background:${color};border-radius:${sq?'2px':'50%'};left:${20+Math.random()*60}%;top:55%;--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;`;c.appendChild(p);setTimeout(()=>p.remove(),(dur+.2)*1000);}}
 
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
-// ── リビール内ダイアログ用状態変数（rpg-window の typewriter とは別） ──
-let currentRevealCard=null,twTimers=[],twRunning=false,dialogDone=false;
-
-// DQ文字チッ音
-function playTick(){try{const ctx=getAudio(),t=ctx.currentTime;const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='square';o.frequency.setValueAtTime(880,t);o.frequency.exponentialRampToValueAtTime(580,t+.018);g.gain.setValueAtTime(.026,t);g.gain.exponentialRampToValueAtTime(.001,t+.022);o.start(t);o.stop(t+.025);}catch(e){}}
-
-const DQ_PAUSE={'。':160,'、':80,'…':220,'！':130,'？':130,'─':60,'—':60};
-
-function dqScroll(text,startDelay,speakerName){
-  const textEl=document.getElementById('r-dialog-text');
-  const cursor=document.getElementById('r-dialog-cursor');
-  const nameEl=document.getElementById('r-dialog-name');
-  const dialog=document.getElementById('reveal-dialog');
-  textEl.textContent='';cursor.style.display='none';
-  nameEl.textContent=speakerName||'シャル';
-  dialog.classList.add('show-dialog');
-  twRunning=true;dialogDone=false;
-  let i=0,displayed='';
-  const go=function tick(){
-    if(i>=text.length){textEl.textContent=text;cursor.style.display='inline';twRunning=false;dialogDone=true;twTimers=[];return;}
-    const ch=text[i];displayed+=ch;textEl.textContent=displayed;
-    if(ch.trim()&&!DQ_PAUSE[ch]&&ch!=='　')playTick();
-    const extra=DQ_PAUSE[ch]||0;i++;twTimers=[setTimeout(tick,38+extra)];
-  };
-  twTimers=[setTimeout(go,startDelay)];
-}
-
-function skipRevealDialog(){
-  twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});
-  twTimers=[];twRunning=false;
-  if(currentRevealCard)document.getElementById('r-dialog-text').textContent=currentRevealCard.flavor||'';
-  document.getElementById('r-dialog-cursor').style.display='inline';
-  dialogDone=true;
-}
-
-function handleStageClick(){
-  if(twRunning){skipRevealDialog();}
-  else if(dialogDone){resolveReveal();}
-}
-
-function flipCard(){document.getElementById('flip-inner').classList.add('flipped-bounce');}
-function showCardBack(){const w=document.getElementById('flip-wrapper');void w.offsetWidth;w.classList.add('intro-in');}
-
-function resetStage(){
-  twTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});twTimers=[];twRunning=false;dialogDone=false;
-  document.getElementById('light-beam-R').className='';document.getElementById('light-cross').className='';document.getElementById('sr-aura').className='';
-  ['srb1','srb2','srb3','srb4'].forEach(id=>document.getElementById(id).className='sr-beam');
-  const inner=document.getElementById('flip-inner');
-  inner.style.transition='none';inner.classList.remove('flipped-bounce');void inner.offsetWidth;inner.style.transition='';
-  const wrapper=document.getElementById('flip-wrapper');wrapper.classList.remove('intro-in');void wrapper.offsetWidth;
-  document.getElementById('reveal-rarity-text').className='';document.getElementById('reveal-rarity-text').style.cssText='';
-  document.getElementById('reveal-dialog').classList.remove('show-dialog');
-  document.getElementById('r-dialog-text').textContent='';document.getElementById('r-dialog-cursor').style.display='none';
-  document.getElementById('reveal-img').style.boxShadow='';
-}
-function setRevealCard(card){currentRevealCard=card;const img=document.getElementById('reveal-img'),icon=document.getElementById('reveal-icon-big');if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}}
-async function showRevealNHN(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);const rar=document.getElementById('reveal-rarity-text');rar.textContent=card.rarity;rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';await wait(60);showCardBack();await wait(600);flipCard();await wait(700);rar.classList.add('show-text');dqScroll(card.flavor||'',480,card.speaker||'シャル');});}
-async function showRevealR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='R A R E';rar.style.color='var(--R)';await wait(60);showCardBack();await wait(400);document.getElementById('light-beam-R').classList.add('active');await wait(500);document.getElementById('light-cross').classList.add('active');await wait(200);flipCard();await wait(700);rar.classList.add('show-text');dqScroll(card.flavor||'',580,card.speaker||'シャル');});}
-async function showRevealSR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='SUPER RARE';rar.style.color='var(--SR)';await wait(60);showCardBack();await wait(300);document.getElementById('sr-aura').classList.add('active');await wait(300);['srb1','srb2','srb3','srb4'].forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('active'),i*120));await wait(700);spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);flipCard();await wait(700);rar.classList.add('show-text');dqScroll(card.flavor||'',780,card.speaker||'シャル');});}
+function resetStage(){document.getElementById('light-beam-R').className='';document.getElementById('light-cross').className='';document.getElementById('sr-aura').className='';['srb1','srb2','srb3','srb4'].forEach(id=>{document.getElementById(id).className='sr-beam';});const area=document.getElementById('reveal-card-area');area.className='';area.style.opacity='0';['reveal-rarity-text','reveal-name-text','reveal-tap-hint'].forEach(id=>document.getElementById(id).className='');const fl=document.getElementById('reveal-flavor');fl.className='';fl.textContent='';}
+function setRevealCard(card){const img=document.getElementById('reveal-img'),icon=document.getElementById('reveal-icon-big');if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}document.getElementById('reveal-name-text').textContent=card.name;document.getElementById('reveal-flavor').textContent=card.flavor||'';}
+async function showRevealNHN(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='none';const rar=document.getElementById('reveal-rarity-text');rar.textContent=card.rarity;rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';document.getElementById('reveal-flavor').style.color='rgba(232,223,200,.7)';await wait(100);document.getElementById('reveal-card-area').classList.add('show-card');rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');document.getElementById('reveal-flavor').classList.add(`show-flavor-${card.rarity}`);document.getElementById('reveal-tap-hint').classList.add('show-text');});}
+async function showRevealR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='R A R E';rar.style.color='var(--R)';document.getElementById('reveal-flavor').style.color='rgba(180,210,255,.85)';await wait(300);document.getElementById('light-beam-R').classList.add('active');await wait(500);document.getElementById('light-cross').classList.add('active');await wait(300);document.getElementById('reveal-card-area').classList.add('show-card');await wait(100);rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');document.getElementById('reveal-flavor').classList.add('show-flavor-R');document.getElementById('reveal-tap-hint').classList.add('show-text');});}
+async function showRevealSR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='SUPER RARE';rar.style.color='var(--SR)';document.getElementById('reveal-flavor').style.color='rgba(240,201,106,.9)';await wait(200);document.getElementById('sr-aura').classList.add('active');await wait(300);['srb1','srb2','srb3','srb4'].forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('active'),i*120));await wait(800);spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);document.getElementById('reveal-card-area').classList.add('show-card');await wait(100);rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');document.getElementById('reveal-flavor').classList.add('show-flavor-SR');document.getElementById('reveal-tap-hint').classList.add('show-text-sr');});}
 function resolveReveal(){document.getElementById('reveal-stage').classList.remove('show');if(revealResolve){revealResolve();revealResolve=null;}}
 
 function rollRarity(){const r=Math.random();let a=0;for(const{rarity,rate}of RATES){a+=rate;if(r<a)return rarity;}return 'N';}
@@ -502,7 +400,6 @@ function renderHistory(){const w=document.getElementById('rare-history');if(!his
 function toggleRate(){const t=document.getElementById('rate-table');t.classList.toggle('show');document.getElementById('rate-toggle').textContent=t.classList.contains('show')?'▴ 排出率を閉じる':'▾ 排出率を確認する';}
 function resetAll(){stats={N:0,HN:0,R:0,SR:0,total:0};history=[];document.getElementById('result-grid').innerHTML='';document.getElementById('rare-history').innerHTML='';renderStats();showRpgMessage('afterReset');}
 
-document.getElementById('reveal-stage').addEventListener('click',handleStageClick);
 renderStats();
 setTimeout(()=>showRpgMessage('idle'),300);
 </script>
