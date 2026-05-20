@@ -130,11 +130,19 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 .bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}
 @media(max-width:480px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px;}.btn-gacha{min-width:140px;padding:14px 20px;}}
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YGSDRZ5HQD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YGSDRZ5HQD');
+</script>
 </head>
 <body>
 <div id="particles"></div>
 
-<div id="reveal-stage" onclick="resolveReveal()">
+<div id="reveal-stage" onclick="handleRevealClick()">
   <div id="reveal-bg"></div>
   <div id="light-beam-R"></div>
   <div id="light-cross"></div>
@@ -203,6 +211,37 @@ let stats={N:0,HN:0,R:0,SR:0,total:0};
 let history=[];
 let audioCtx=null;
 let revealResolve=null;
+
+// ── フレーバーテキスト タイプライター ──
+let flavorTimer=null,flavorDone=false,flavorFullText='';
+const FPAUSE={'。':160,'、':80,'…':220,'！':130,'？':130};
+
+function startFlavorTypewriter(text,startDelay){
+  flavorFullText=text;flavorDone=false;
+  const el=document.getElementById('reveal-flavor');
+  el.textContent='';el.style.opacity='0';
+  setTimeout(()=>{
+    el.style.opacity='1';
+    let i=0;
+    function tick(){
+      if(i>=text.length){el.textContent=text;flavorTimer=null;flavorDone=true;return;}
+      el.textContent=text.slice(0,i+1);
+      const ch=text[i];i++;
+      flavorTimer=setTimeout(tick,45+(FPAUSE[ch]||0));
+    }
+    flavorTimer=setTimeout(tick,0);
+  },startDelay);
+}
+
+function handleRevealClick(){
+  if(flavorTimer!==null){
+    clearTimeout(flavorTimer);flavorTimer=null;
+    document.getElementById('reveal-flavor').textContent=flavorFullText;
+    flavorDone=true;
+  }else{
+    resolveReveal();
+  }
+}
 
 const CARDS=[
   {id:'N_001',name:'見張り番のひと休み',rarity:'N',file:'00001_N.png',flavor:'この槍、重いんだよね。…でも、これがあれば誰かを守れる気がするから。'},
@@ -365,11 +404,11 @@ function playSR(){try{const ctx=getAudio(),t=ctx.currentTime;[1,2,3].forEach(i=>
 function spawnParticles(color,count){const c=document.getElementById('particles');for(let i=0;i<count;i++){const p=document.createElement('div');p.className='particle';const s=Math.random()*12+4,tx=(Math.random()-.5)*window.innerWidth*.9,ty=-(Math.random()*window.innerHeight*.85+60),dur=Math.random()*1+.8,sq=Math.random()>.5;p.style.cssText=`width:${s}px;height:${s}px;background:${color};border-radius:${sq?'2px':'50%'};left:${20+Math.random()*60}%;top:55%;--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;`;c.appendChild(p);setTimeout(()=>p.remove(),(dur+.2)*1000);}}
 
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
-function resetStage(){document.getElementById('light-beam-R').className='';document.getElementById('light-cross').className='';document.getElementById('sr-aura').className='';['srb1','srb2','srb3','srb4'].forEach(id=>{document.getElementById(id).className='sr-beam';});const area=document.getElementById('reveal-card-area');area.className='';area.style.opacity='0';['reveal-rarity-text','reveal-name-text','reveal-tap-hint'].forEach(id=>document.getElementById(id).className='');const fl=document.getElementById('reveal-flavor');fl.className='';fl.textContent='';}
-function setRevealCard(card){const img=document.getElementById('reveal-img'),icon=document.getElementById('reveal-icon-big');if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}document.getElementById('reveal-name-text').textContent=card.name;document.getElementById('reveal-flavor').textContent=card.flavor||'';}
-async function showRevealNHN(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='none';const rar=document.getElementById('reveal-rarity-text');rar.textContent=card.rarity;rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';document.getElementById('reveal-flavor').style.color='rgba(232,223,200,.7)';await wait(100);document.getElementById('reveal-card-area').classList.add('show-card');rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');document.getElementById('reveal-flavor').classList.add(`show-flavor-${card.rarity}`);document.getElementById('reveal-tap-hint').classList.add('show-text');});}
-async function showRevealR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='R A R E';rar.style.color='var(--R)';document.getElementById('reveal-flavor').style.color='rgba(180,210,255,.85)';await wait(300);document.getElementById('light-beam-R').classList.add('active');await wait(500);document.getElementById('light-cross').classList.add('active');await wait(300);document.getElementById('reveal-card-area').classList.add('show-card');await wait(100);rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');document.getElementById('reveal-flavor').classList.add('show-flavor-R');document.getElementById('reveal-tap-hint').classList.add('show-text');});}
-async function showRevealSR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='SUPER RARE';rar.style.color='var(--SR)';document.getElementById('reveal-flavor').style.color='rgba(240,201,106,.9)';await wait(200);document.getElementById('sr-aura').classList.add('active');await wait(300);['srb1','srb2','srb3','srb4'].forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('active'),i*120));await wait(800);spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);document.getElementById('reveal-card-area').classList.add('show-card');await wait(100);rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');document.getElementById('reveal-flavor').classList.add('show-flavor-SR');document.getElementById('reveal-tap-hint').classList.add('show-text-sr');});}
+function resetStage(){if(flavorTimer){clearTimeout(flavorTimer);flavorTimer=null;}flavorDone=false;flavorFullText='';document.getElementById('light-beam-R').className='';document.getElementById('light-cross').className='';document.getElementById('sr-aura').className='';['srb1','srb2','srb3','srb4'].forEach(id=>{document.getElementById(id).className='sr-beam';});const area=document.getElementById('reveal-card-area');area.className='';area.style.opacity='0';['reveal-rarity-text','reveal-name-text','reveal-tap-hint'].forEach(id=>document.getElementById(id).className='');const fl=document.getElementById('reveal-flavor');fl.className='';fl.textContent='';}
+function setRevealCard(card){const img=document.getElementById('reveal-img'),icon=document.getElementById('reveal-icon-big');if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}document.getElementById('reveal-name-text').textContent=card.name;}
+async function showRevealNHN(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='none';const rar=document.getElementById('reveal-rarity-text');rar.textContent=card.rarity;rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';document.getElementById('reveal-flavor').style.color='rgba(232,223,200,.7)';await wait(100);document.getElementById('reveal-card-area').classList.add('show-card');rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');startFlavorTypewriter(card.flavor||'',400);document.getElementById('reveal-tap-hint').classList.add('show-text');});}
+async function showRevealR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='R A R E';rar.style.color='var(--R)';document.getElementById('reveal-flavor').style.color='rgba(180,210,255,.85)';await wait(300);document.getElementById('light-beam-R').classList.add('active');await wait(500);document.getElementById('light-cross').classList.add('active');await wait(300);document.getElementById('reveal-card-area').classList.add('show-card');await wait(100);rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');startFlavorTypewriter(card.flavor||'',600);document.getElementById('reveal-tap-hint').classList.add('show-text');});}
+async function showRevealSR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 60px rgba(192,96,255,.9),0 0 120px rgba(212,168,67,.5)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='SUPER RARE';rar.style.color='var(--SR)';document.getElementById('reveal-flavor').style.color='rgba(240,201,106,.9)';await wait(200);document.getElementById('sr-aura').classList.add('active');await wait(300);['srb1','srb2','srb3','srb4'].forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('active'),i*120));await wait(800);spawnParticles('#c060ff',15);spawnParticles('#d4a843',15);document.getElementById('reveal-card-area').classList.add('show-card');await wait(100);rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');startFlavorTypewriter(card.flavor||'',1100);document.getElementById('reveal-tap-hint').classList.add('show-text-sr');});}
 function resolveReveal(){document.getElementById('reveal-stage').classList.remove('show');if(revealResolve){revealResolve();revealResolve=null;}}
 
 function rollRarity(){const r=Math.random();let a=0;for(const{rarity,rate}of RATES){a+=rate;if(r<a)return rarity;}return 'N';}
