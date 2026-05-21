@@ -130,24 +130,14 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
 .bar-N{background:var(--N)}.bar-HN{background:var(--HN)}.bar-R{background:var(--R)}.bar-SR{background:var(--SR)}
 @media(max-width:480px){#result-grid{grid-template-columns:repeat(3,1fr);gap:8px;}.btn-gacha{min-width:140px;padding:14px 20px;}}
 
-/* ===== CARD FLIP ===== */
-#flip-wrapper{width:min(220px,55vw);aspect-ratio:5/7;perspective:900px;flex-shrink:0;}
-#flip-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;}
-#flip-inner.flipped{animation:flipBounce .65s cubic-bezier(.4,0,.2,1) forwards;}
-@keyframes flipBounce{
-  0%  {transform:rotateY(0deg)   scale(1)}
-  40% {transform:rotateY(100deg) scale(.92)}
-  70% {transform:rotateY(175deg) scale(1.04)}
-  85% {transform:rotateY(178deg) scale(.98)}
-  100%{transform:rotateY(180deg) scale(1)}
-}
-.flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;}
-#flip-back-face{box-shadow:0 4px 24px rgba(0,0,0,.7);}
-#flip-back-face img{width:100%;height:100%;object-fit:cover;display:block;}
-#flip-front-face{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;}
-/* reveal-imgのサイズをflip内用に上書き */
-#flip-front-face #reveal-img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0;}
-#flip-front-face #reveal-icon-big{font-size:4rem;display:none;text-align:center;}
+/* ===== CARD FLIP (2D擬似フリップ) ===== */
+#card-face-back,#card-face-front{width:min(220px,55vw);border-radius:10px;overflow:hidden;flex-shrink:0;}
+#card-face-back img{width:100%;display:block;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,.7);}
+#card-face-front{display:none;}
+#card-face-back.flip-out{animation:flipOut .32s ease-in forwards;}
+#card-face-front.flip-in{animation:flipIn .32s ease-out forwards;}
+@keyframes flipOut{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes flipIn {from{transform:scaleX(0)}to{transform:scaleX(1)}}
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YGSDRZ5HQD"></script>
@@ -171,16 +161,12 @@ th{color:var(--text-dim);font-weight:400;font-size:.7rem;}
   <div class="sr-beam" id="srb3" style="left:65%;background:linear-gradient(to bottom,transparent,rgba(192,96,255,.8),transparent);"></div>
   <div class="sr-beam" id="srb4" style="left:85%;background:linear-gradient(to bottom,transparent,rgba(212,168,67,.8),transparent);"></div>
   <div id="reveal-card-area">
-    <div id="flip-wrapper">
-      <div id="flip-inner">
-        <div class="flip-face" id="flip-back-face">
-          <img src="Shal-card-back.png" alt="card back">
-        </div>
-        <div class="flip-face" id="flip-front-face">
-          <img id="reveal-img" src="" alt="">
-          <div id="reveal-icon-big"></div>
-        </div>
-      </div>
+    <div id="card-face-back">
+      <img src="Shal-card-back.png" alt="card back">
+    </div>
+    <div id="card-face-front">
+      <img id="reveal-img" src="" alt="">
+      <div id="reveal-icon-big"></div>
     </div>
     <div id="reveal-rarity-text"></div>
     <div id="reveal-name-text"></div>
@@ -433,13 +419,23 @@ function spawnParticles(color,count){const c=document.getElementById('particles'
 
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 function flipCard(){
-  const el=document.getElementById('flip-inner');
-  if(el) el.classList.add('flipped');
+  const back=document.getElementById('card-face-back');
+  const front=document.getElementById('card-face-front');
+  if(!back||!front)return;
+  back.classList.add('flip-out');
+  setTimeout(()=>{
+    back.style.display='none';
+    front.style.display='block';
+    void front.offsetWidth;
+    front.classList.add('flip-in');
+  },320);
 }
 
 function resetStage(){
-  const inner=document.getElementById('flip-inner');
-  if(inner){inner.style.transition='none';inner.classList.remove('flipped');void inner.offsetWidth;inner.style.transition='';}if(flavorTimer){clearTimeout(flavorTimer);flavorTimer=null;}flavorDone=false;flavorFullText='';document.getElementById('light-beam-R').className='';document.getElementById('light-cross').className='';document.getElementById('sr-aura').className='';['srb1','srb2','srb3','srb4'].forEach(id=>{document.getElementById(id).className='sr-beam';});const area=document.getElementById('reveal-card-area');area.className='';area.style.opacity='0';['reveal-rarity-text','reveal-name-text','reveal-tap-hint'].forEach(id=>document.getElementById(id).className='');const fl=document.getElementById('reveal-flavor');fl.className='';fl.textContent='';}
+  const back=document.getElementById('card-face-back');
+  const front=document.getElementById('card-face-front');
+  if(back){back.classList.remove('flip-out');back.style.display='block';}
+  if(front){front.classList.remove('flip-in');front.style.display='none';}if(flavorTimer){clearTimeout(flavorTimer);flavorTimer=null;}flavorDone=false;flavorFullText='';document.getElementById('light-beam-R').className='';document.getElementById('light-cross').className='';document.getElementById('sr-aura').className='';['srb1','srb2','srb3','srb4'].forEach(id=>{document.getElementById(id).className='sr-beam';});const area=document.getElementById('reveal-card-area');area.className='';area.style.opacity='0';['reveal-rarity-text','reveal-name-text','reveal-tap-hint'].forEach(id=>document.getElementById(id).className='');const fl=document.getElementById('reveal-flavor');fl.className='';fl.textContent='';}
 function setRevealCard(card){const img=document.getElementById('reveal-img'),icon=document.getElementById('reveal-icon-big');if(card.file){img.src=IMG+card.file;img.style.display='block';icon.style.display='none';}else{img.style.display='none';icon.textContent=ICONS[card.rarity]||'🃏';icon.style.display='block';}document.getElementById('reveal-name-text').textContent=card.name;}
 async function showRevealNHN(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='none';const rar=document.getElementById('reveal-rarity-text');rar.textContent=card.rarity;rar.style.color=card.rarity==='HN'?'var(--HN)':'var(--N)';document.getElementById('reveal-flavor').style.color='rgba(232,223,200,.7)';await wait(100);document.getElementById('reveal-card-area').classList.add('show-card');await wait(600);flipCard();await wait(700);rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');startFlavorTypewriter(card.flavor||'',400);document.getElementById('reveal-tap-hint').classList.add('show-text');});}
 async function showRevealR(card){return new Promise(async resolve=>{revealResolve=resolve;resetStage();document.getElementById('reveal-stage').classList.add('show');setRevealCard(card);document.getElementById('reveal-img').style.boxShadow='0 0 40px rgba(74,158,255,.8),0 0 80px rgba(74,158,255,.4)';const rar=document.getElementById('reveal-rarity-text');rar.textContent='R A R E';rar.style.color='var(--R)';document.getElementById('reveal-flavor').style.color='rgba(180,210,255,.85)';await wait(300);document.getElementById('light-beam-R').classList.add('active');await wait(500);document.getElementById('light-cross').classList.add('active');await wait(300);document.getElementById('reveal-card-area').classList.add('show-card');await wait(600);flipCard();await wait(700);rar.classList.add('show-text');document.getElementById('reveal-name-text').classList.add('show-text');startFlavorTypewriter(card.flavor||'',600);document.getElementById('reveal-tap-hint').classList.add('show-text');});}
